@@ -1,0 +1,11 @@
+flight_id,total_seats,free_seats,airline,aircraft_type
+1,180,25,Qatar Airways,Airbus A320
+2,396,50,Turkish Airlines,Boeing 777
+3,277,120,Lufthansa,Airbus A330
+4,100,10,Azerbaijan Airlines,Embraer E190
+5,242,15,Etihad Airways,Boeing 787
+6,315,70,British Airways,Airbus A350
+7,86,5,Air Canada,Bombardier CRJ900
+8,155,30,Delta Airlines,McDonnell Douglas MD-83
+9,410,150,Emirates,Boeing 747
+10,92,12,Air France,Concorde
