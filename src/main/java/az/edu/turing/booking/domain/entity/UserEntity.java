@@ -27,11 +27,11 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class UserEntity extends BaseEntity {
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private UserRole role;
 
     @ManyToMany(mappedBy = "passengers")
