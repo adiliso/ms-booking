@@ -13,13 +13,11 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 @Entity
 @Getter
@@ -28,10 +26,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "flight_details")
-public class FlightDetailsEntity implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+@EqualsAndHashCode(callSuper = true)
+public class FlightDetailsEntity extends BaseEntity {
 
     @Id
     @Column(name = "flight_id")
