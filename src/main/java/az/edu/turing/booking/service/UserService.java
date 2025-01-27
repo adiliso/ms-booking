@@ -1,17 +1,20 @@
 package az.edu.turing.booking.service;
 
-import az.edu.turing.booking.domain.entity.UserEntity;
-import az.edu.turing.booking.model.enums.UserRole;
+import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.model.dto.UserDto;
+import az.edu.turing.booking.model.dto.request.CreateUserRequest;
+import az.edu.turing.booking.model.dto.request.UpdateRoleRequest;
+import az.edu.turing.booking.model.dto.request.UpdateUsernameRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 public interface UserService {
 
-    void create(UserEntity userEntity);
+    UserDto create(CreateUserRequest request);
 
-    void updateUsername(long id, String username);
+    UserDto updateUsername(long id, UpdateUsernameRequest request) throws NotFoundException;
 
-    void updateRole(long id, UserRole role);
+    UserDto updateRole(long id, UpdateRoleRequest request) throws NotFoundException;
 
     boolean isAdmin(long id);
 }
