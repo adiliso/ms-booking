@@ -5,7 +5,7 @@ import az.edu.turing.booking.model.dto.UserDto;
 import az.edu.turing.booking.model.dto.request.UserCreateRequest;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
     UserEntity toEntity(UserCreateRequest userCreateRequest);
