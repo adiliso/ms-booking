@@ -49,4 +49,15 @@ public class FlightEntity extends BaseEntity {
     @OneToOne(mappedBy = "flight", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private FlightDetailsEntity flightDetails;
+
+    public void setFlightDetails(FlightDetailsEntity flightDetails) {
+        if (flightDetails == null) {
+            if (this.flightDetails != null) {
+                this.flightDetails.setFlight(null);
+            }
+        } else {
+            flightDetails.setFlight(this);
+        }
+        this.flightDetails = flightDetails;
+    }
 }
