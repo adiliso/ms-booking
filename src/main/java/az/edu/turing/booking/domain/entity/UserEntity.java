@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,6 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private UserRole role;
 
-    @ManyToMany(mappedBy = "passengers")
+    @ManyToMany(mappedBy = "passengers", fetch = FetchType.LAZY)
     private Set<BookingEntity> bookings = new HashSet<>();
 }
