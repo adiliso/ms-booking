@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: Aytan Babakishiyeva
+      changes:
+        - createTable:
+            tableName: bookings
+            columns:
+              - column:
+                  name: id
+                  type: bigSerial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: flight_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_price
+                  type: double
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status
+                  type: varchar(15)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_by
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_by
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: bookings
+            baseColumnNames: flight_id
+            referencedTableName: flights
+            referencedColumnNames: id
+            constraintName: fk_booking_flight

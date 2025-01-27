@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005
+      author: Aytan Babakishiyeva
+      changes:
+        - createTable:
+            tableName: bookings_passengers
+            columns:
+              - column:
+                  name: booking_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: passenger_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: bookings_passengers
+            baseColumnNames: booking_id
+            referencedTableName: bookings
+            referencedColumnNames: id
+            constraintName: fk_bookings_passengers_booking
+        - addForeignKeyConstraint:
+            baseTableName: bookings_passengers
+            baseColumnNames: passenger_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_bookings_passengers_user

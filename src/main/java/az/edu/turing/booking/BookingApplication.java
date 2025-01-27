@@ -1,13 +1,13 @@
-package az.edu.turing.msbooking;
+package az.edu.turing.booking;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MsBookingApplication {
+public class BookingApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MsBookingApplication.class, args);
+        SpringApplication.run(BookingApplication.class, args);
     }
 
 }
