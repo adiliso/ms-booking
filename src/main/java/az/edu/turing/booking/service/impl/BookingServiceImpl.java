@@ -48,12 +48,7 @@ public class BookingServiceImpl implements BookingService {
                     flight.getFlightDetails().getFreeSeats()));
         }
 
-        BookingEntity booking = BookingEntity.builder()
-                .createdBy(createdBy)
-                .flight(flight)
-                .totalPrice(request.getNumberOfPassengers() * flight.getPrice())
-                .status(BookingStatus.CONFIRMED)
-                .build();
+        BookingEntity booking = bookingMapper.toEntity(createdBy, request);
 
         request.getPassengers()
                 .forEach(p -> booking.addPassenger(userRepository.findByUsername(p)
