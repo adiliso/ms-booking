@@ -5,7 +5,6 @@ import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.FlightSpecification;
-import az.edu.turing.booking.domain.repository.UserRepository;
 import az.edu.turing.booking.exception.BadRequestException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
