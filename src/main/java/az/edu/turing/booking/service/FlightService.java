@@ -1,22 +1,34 @@
 package az.edu.turing.booking.service;
 
-import az.edu.turing.booking.domain.entity.FlightEntity;
+import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
+import az.edu.turing.booking.model.dto.request.FlightSearchRequest;
+import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
+import az.edu.turing.booking.model.dto.response.DetailedFlightResponse;
+import az.edu.turing.booking.model.dto.response.FlightResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
 
 @Transactional(readOnly = true)
 public interface FlightService {
 
-    void create(FlightEntity flightEntity);
+    @Transactional
+    Integer addSeats(Long flightId, Integer numberOfSeats);
 
-    FlightEntity update(long id, FlightEntity flightEntity);
+    @Transactional
+    Integer releaseSeats(Long flightId, Integer seats);
 
-    Collection<FlightEntity> findAllInNext24Hours();
+    @Transactional
+    FlightResponse create(Long createdBy, FlightCreateRequest flightCreateRequest);
 
-    FlightEntity showInfoById(long id);
+    @Transactional
+    FlightResponse update(Long id, FlightUpdateRequest flightUpdateRequest);
 
-    FlightEntity showDetailedInfoById(long id);
+    Page<FlightResponse> findAllInNext24Hours(Pageable pageable);
 
-    Collection<FlightEntity> search(FlightEntity flightEntity);
+    FlightResponse getInfoById(Long id);
+
+    DetailedFlightResponse getDetailedInfoById(Long id);
+
+    Page<FlightResponse> search(FlightSearchRequest flightSearchRequest, Pageable pageable);
 }
