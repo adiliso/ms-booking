@@ -23,5 +23,5 @@ public class BookingCreateRequest {
     private int numberOfPassengers;
 
     @NotEmpty(message = "Passengers list must contain at least one passenger.")
-    private Set<String> passengers;
+    private Set<String> usernameOfPassengers;
 }

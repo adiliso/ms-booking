@@ -12,18 +12,18 @@ import java.util.Collection;
 public interface BookingService {
 
     @Transactional
-    BookingDto create(long createdBy, BookingCreateRequest request);
+    BookingDto create(Long createdBy, BookingCreateRequest request);
 
     @Transactional
-    BookingDto update(long updatedBy, long bookingId, BookingUpdateRequest request);
+    BookingDto update(Long updatedBy, Long bookingId, BookingUpdateRequest request);
 
     Collection<BookingDto> getBookingsByUsername(String username);
 
-    BookingDto getBookingById(long id);
+    BookingDto getBookingById(Long id);
 
     @Transactional
-    BookingDto updateStatus(long userId, long bookingId, BookingStatus status);
+    BookingDto updateStatus(Long updatedBy, Long bookingId, BookingStatus status);
 
     @Transactional
-    void cancel(long id);
+    void cancel(Long id);
 }

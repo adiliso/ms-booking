@@ -22,7 +22,7 @@ public interface FlightService {
     FlightResponse create(Long createdBy, FlightCreateRequest flightCreateRequest);
 
     @Transactional
-    FlightResponse update(Long id, FlightUpdateRequest flightUpdateRequest);
+    FlightResponse update(Long updatedBy, Long id, FlightUpdateRequest flightUpdateRequest);
 
     Page<FlightResponse> findAllInNext24Hours(Pageable pageable);
 

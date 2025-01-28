@@ -2,7 +2,6 @@ package az.edu.turing.booking.service.impl;
 
 import az.edu.turing.booking.domain.entity.BookingEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
-import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.BookingRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.UserRepository;
@@ -13,8 +12,9 @@ import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.requests.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.requests.BookingUpdateRequest;
 import az.edu.turing.booking.model.enums.BookingStatus;
-import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.service.BookingService;
+import az.edu.turing.booking.service.FlightService;
+import az.edu.turing.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +30,11 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final FlightRepository flightRepository;
     private final BookingMapper bookingMapper;
+    private final FlightService flightService;
+    private final UserService userService;
 
     @Override
-    public BookingDto create(long createdBy, BookingCreateRequest request) {
+    public BookingDto create(Long createdBy, BookingCreateRequest request) {
         userExistsById(createdBy);
 
         FlightEntity flight = flightRepository
@@ -49,22 +51,22 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingEntity booking = bookingMapper.toEntity(createdBy, request);
-
-        request.getPassengers()
+        request.getUsernameOfPassengers()
                 .forEach(p -> booking.addPassenger(userRepository.findByUsername(p)
                         .orElseThrow(() -> new NotFoundException("User not found with username: " + p))));
 
-        bookingRepository.save(booking);
+        flightService.releaseSeats(flight.getId(), request.getNumberOfPassengers());
 
-        return bookingMapper.toDto(booking);
+        return bookingMapper.toDto(bookingRepository.save(booking));
     }
 
     @Override
-    public BookingDto update(long updatedBy, long bookingId, BookingUpdateRequest request) {
+    public BookingDto update(Long updatedBy, Long bookingId, BookingUpdateRequest request) {
         userExistsById(updatedBy);
 
         BookingEntity booking = findById(bookingId);
 
+        booking.setUpdatedBy(updatedBy);
         booking.setTotalPrice(request.getTotalPrice());
         booking.setStatus(request.getStatus());
 
@@ -84,42 +86,41 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto getBookingById(long id) {
+    public BookingDto getBookingById(Long id) {
         return bookingMapper.toDto(findById(id));
     }
 
     @Override
-    public BookingDto updateStatus(long userId, long id, BookingStatus status) {
+    public BookingDto updateStatus(Long updatedBy, Long id, BookingStatus status) {
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-
-        if (!user.getRole().equals(UserRole.ADMIN)) {
-            throw new BadRequestException((String.format("User %s is not admin", userId)));
+        if (!userService.isAdmin(id)) {
+            throw new BadRequestException(("User is not admin"));
         }
 
         BookingEntity booking = findById(id);
         booking.setStatus(status);
+        booking.setUpdatedBy(updatedBy);
 
-        bookingRepository.save(booking);
-        return bookingMapper.toDto(booking);
+        return bookingMapper.toDto(bookingRepository.save(booking));
     }
 
     @Override
-    public void cancel(long id) {
+    public void cancel(Long id) {
         BookingEntity booking = findById(id);
         booking.setStatus(BookingStatus.CANCELLED);
+
+        flightService.addSeats(booking.getFlight().getId(), booking.getPassengers().size());
 
         bookingRepository.save(booking);
     }
 
-    private void userExistsById(long userId) {
+    private void userExistsById(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("User not found with id " + userId);
         }
     }
 
-    private BookingEntity findById(long id) {
+    private BookingEntity findById(Long id) {
         return bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Booking not found with id: " + id));
     }
