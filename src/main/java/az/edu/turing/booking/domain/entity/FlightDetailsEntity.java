@@ -45,7 +45,7 @@ public class FlightDetailsEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "aircraft_type", nullable = false)
-    private AircraftType aircraftType;
+    private AircraftType aircraft;
 
     @MapsId
     @OneToOne

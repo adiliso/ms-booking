@@ -51,7 +51,7 @@ public class BookingEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BookingStatus status;
+        private BookingStatus status;
 
     public void addPassenger(UserEntity passenger) {
         passengers.add(passenger);
