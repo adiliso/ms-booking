@@ -1,6 +1,8 @@
 package az.edu.turing.booking.service;
 
-import az.edu.turing.booking.domain.entity.BookingEntity;
+import az.edu.turing.booking.model.dto.BookingDto;
+import az.edu.turing.booking.model.dto.requests.BookingCreateRequest;
+import az.edu.turing.booking.model.dto.requests.BookingUpdateRequest;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,15 +11,19 @@ import java.util.Collection;
 @Transactional(readOnly = true)
 public interface BookingService {
 
-    BookingEntity create(BookingEntity bookingEntity);
+    @Transactional
+    BookingDto create(Long createdBy, BookingCreateRequest request);
 
-    BookingEntity update(long id, BookingEntity bookingEntity);
+    @Transactional
+    BookingDto update(Long updatedBy, Long bookingId, BookingUpdateRequest request);
 
-    Collection<BookingEntity> getFlightsByUsername(String username);
+    Collection<BookingDto> getBookingsByUsername(String username);
 
-    BookingEntity getBookingById(long id);
+    BookingDto getBookingById(Long id);
 
-    BookingEntity updateStatus(long id, BookingStatus status);
+    @Transactional
+    BookingDto updateStatus(Long updatedBy, Long bookingId, BookingStatus status);
 
-    void cancel(long id);
+    @Transactional
+    void cancel(Long id);
 }

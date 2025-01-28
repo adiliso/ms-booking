@@ -13,10 +13,10 @@ public interface UserService {
     UserDto create(UserCreateRequest request);
 
     @Transactional
-    UserDto updateUsername(long id, UsernameUpdateRequest request);
+    UserDto updateUsername(Long id, UsernameUpdateRequest request);
 
     @Transactional
-    UserDto updateRole(long id, UserRoleUpdateRequest request);
+    UserDto updateRole(Long id, UserRoleUpdateRequest request);
 
-    boolean isAdmin(long id);
+    boolean isAdmin(Long id);
 }

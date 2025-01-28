@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class FlightUpdateRequest {
 
-    private Long userId;
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private Double price;

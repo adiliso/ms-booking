@@ -29,13 +29,11 @@ public class UserServiceImpl implements UserService {
         }
         UserEntity userEntity = userMapper.toEntity(request);
 
-        userRepository.save(userEntity);
-
-        return userMapper.toDto(userEntity);
+        return userMapper.toDto(userRepository.save(userEntity));
     }
 
     @Override
-    public UserDto updateUsername(long id, UsernameUpdateRequest request) {
+    public UserDto updateUsername(Long id, UsernameUpdateRequest request) {
 
         UserEntity userEntity = existsUserEntity(id);
         userEntity.setUsername(request.getUsername());
@@ -44,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateRole(long id, UserRoleUpdateRequest request) {
+    public UserDto updateRole(Long id, UserRoleUpdateRequest request) {
 
         UserEntity userEntity = existsUserEntity(id);
         userEntity.setRole(request.getRole());
@@ -53,13 +51,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isAdmin(long id) {
-
-        UserEntity userEntity = existsUserEntity(id);
-        return userEntity.getRole() == UserRole.ADMIN;
+    public boolean isAdmin(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User not found with id: " + id);
+        }
+        return userRepository.existsByIdAndRole(id, UserRole.ADMIN);
     }
 
-    public UserEntity existsUserEntity(long id) {
+    private UserEntity existsUserEntity(long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }

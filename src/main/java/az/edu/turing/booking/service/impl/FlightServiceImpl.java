@@ -2,11 +2,9 @@ package az.edu.turing.booking.service.impl;
 
 import az.edu.turing.booking.domain.entity.FlightDetailsEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
-import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.FlightSpecification;
-import az.edu.turing.booking.domain.repository.UserRepository;
 import az.edu.turing.booking.exception.BadRequestException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
@@ -15,8 +13,8 @@ import az.edu.turing.booking.model.dto.request.FlightSearchRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.DetailedFlightResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
-import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.service.FlightService;
+import az.edu.turing.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,8 +31,8 @@ public class FlightServiceImpl implements FlightService {
 
     private final FlightDetailsRepository flightDetailsRepository;
     private final FlightRepository flightRepository;
-    private final UserRepository userRepository;
     private final FlightMapper flightMapper;
+    private final UserService userService;
 
     @Override
     public Integer addSeats(Long flightId, Integer seats) {
@@ -58,14 +56,11 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightResponse create(Long createdBy, FlightCreateRequest flightCreateRequest) {
-        UserEntity user = userRepository.findById(createdBy)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + createdBy));
-
-        if (user.getRole() != UserRole.ADMIN) {
+        if (userService.isAdmin(createdBy)) {
             throw new BadRequestException("You cannot create a flight without an admin role");
         }
 
-        FlightEntity flight = flightMapper.toEntity(flightCreateRequest);
+        FlightEntity flight = flightMapper.toEntity(createdBy, flightCreateRequest);
         FlightDetailsEntity detailsEntity = flightMapper.toDetailsEntity(flightCreateRequest);
 
         flight.setFlightDetails(detailsEntity);
@@ -77,12 +72,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightResponse update(Long flightId, FlightUpdateRequest flightUpdateRequest) {
-        UserEntity user = userRepository.findById(flightUpdateRequest.getUserId())
-                .orElseThrow(() ->
-                        new NotFoundException("User not found with id: " + flightUpdateRequest.getUserId()));
+    public FlightResponse update(Long updatedBy, Long flightId, FlightUpdateRequest flightUpdateRequest) {
 
-        if (user.getRole() != UserRole.ADMIN) {
+        if (!userService.isAdmin(updatedBy)) {
             throw new BadRequestException("You cannot update a flight without an admin role");
         }
 
@@ -91,6 +83,7 @@ public class FlightServiceImpl implements FlightService {
         FlightEntity flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightId));
 
+        flight.setUpdatedBy(updatedBy);
         flight.setPrice(flightUpdateRequest.getPrice());
         detailsEntity.setAirline(flightUpdateRequest.getAirline());
         flight.setDepartureTime(flightUpdateRequest.getDepartureTime());
