@@ -8,6 +8,7 @@ import az.edu.turing.booking.model.dto.response.FlightResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.repository.query.Param;
 
 @Mapper(componentModel = "spring")
 public interface FlightMapper {
@@ -21,7 +22,8 @@ public interface FlightMapper {
 
     FlightResponse toResponse(FlightEntity flightEntity);
 
-    FlightEntity toEntity(FlightCreateRequest request);
+    @Mapping(target = "createdBy", source = "createdBy")
+    FlightEntity toEntity(@Param("createdBy") Long createdBy, FlightCreateRequest request);
 
     FlightDetailsEntity toDetailsEntity(FlightCreateRequest request);
 }
