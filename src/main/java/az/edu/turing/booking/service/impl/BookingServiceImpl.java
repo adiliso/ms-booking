@@ -5,7 +5,8 @@ import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.repository.BookingRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.UserRepository;
-import az.edu.turing.booking.exception.BadRequestException;
+import az.edu.turing.booking.exception.AccessDeniedException;
+import az.edu.turing.booking.exception.InvalidOperationException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.BookingMapper;
 import az.edu.turing.booking.model.dto.BookingDto;
@@ -42,11 +43,11 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Flight not found with id: " + request.getFlightId()));
 
         if (flight.getDepartureTime().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new BadRequestException("Too late booking for flight");
+            throw new InvalidOperationException("Too late booking for flight");
         }
 
         if (flight.getFlightDetails().getFreeSeats() < request.getNumberOfPassengers()) {
-            throw new BadRequestException(String.format("There are only %d free seats in this flight",
+            throw new InvalidOperationException(String.format("There are only %d free seats in this flight",
                     flight.getFlightDetails().getFreeSeats()));
         }
 
@@ -94,7 +95,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto updateStatus(Long updatedBy, Long id, BookingStatus status) {
 
         if (!userService.isAdmin(id)) {
-            throw new BadRequestException(("User is not admin"));
+            throw new AccessDeniedException(("User is not admin"));
         }
 
         BookingEntity booking = findById(id);

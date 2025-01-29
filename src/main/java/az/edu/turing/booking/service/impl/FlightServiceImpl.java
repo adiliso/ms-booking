@@ -5,7 +5,9 @@ import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.FlightSpecification;
-import az.edu.turing.booking.exception.BadRequestException;
+import az.edu.turing.booking.exception.AccessDeniedException;
+import az.edu.turing.booking.exception.AlreadyExistsException;
+import az.edu.turing.booking.exception.InvalidOperationException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.FlightFilter;
@@ -40,7 +42,7 @@ public class FlightServiceImpl implements FlightService {
         FlightDetailsEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() + seats;
         if (entity.getTotalSeats() < finalFreeSeats) {
-            throw new BadRequestException("Cannot add seats!");
+            throw new InvalidOperationException("Cannot add seats!");
         }
         return finalFreeSeats;
     }
@@ -50,7 +52,7 @@ public class FlightServiceImpl implements FlightService {
         FlightDetailsEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() - seats;
         if (finalFreeSeats < 0) {
-            throw new BadRequestException("Cannot release seats!");
+            throw new InvalidOperationException("Cannot release seats!");
         }
         return finalFreeSeats;
     }
@@ -58,11 +60,11 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightResponse create(Long userId, Long flightId, FlightCreateRequest flightCreateRequest) {
         if (userService.isAdmin(userId)) {
-            throw new BadRequestException("You cannot create a flight without an admin role");
+            throw new AccessDeniedException("You cannot create a flight without an admin role");
         }
 
         if (flightRepository.existsById(flightId)) {
-            throw new BadRequestException("Flight already exists!");
+            throw new AlreadyExistsException("Flight already exists!");
         }
 
         FlightEntity flight = flightMapper.toEntity(userId, flightCreateRequest);
@@ -80,7 +82,7 @@ public class FlightServiceImpl implements FlightService {
     public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest flightUpdateRequest) {
 
         if (!userService.isAdmin(userId)) {
-            throw new BadRequestException("You cannot update a flight without an admin role");
+            throw new AccessDeniedException("You cannot update a flight without an admin role");
         }
 
         FlightDetailsEntity detailsEntity = getFlightDetails(flightId);
