@@ -12,6 +12,9 @@ import az.edu.turing.booking.model.dto.request.UsernameUpdateRequest;
 import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUsername(Long id, UsernameUpdateRequest request) {
 
-        UserEntity userEntity = existsUserEntity(id);
+        UserEntity userEntity = findById(id);
         userEntity.setUsername(request.getUsername());
         userRepository.save(userEntity);
         return userMapper.toDto(userEntity);
@@ -49,10 +52,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateRole(Long id, UserRoleUpdateRequest request) {
 
-        UserEntity userEntity = existsUserEntity(id);
+        UserEntity userEntity = findById(id);
         userEntity.setRole(request.getRole());
         userRepository.save(userEntity);
         return userMapper.toDto(userEntity);
+    }
+
+    @Override
+    public UserDto getById(Long id) {
+        return userMapper.toDto(findById(id));
+    }
+
+    @Override
+    public UserDto getByUsername(String username) {
+        return userMapper.toDto(findByUsername(username));
+    }
+
+    @Override
+    public Page<UserDto> findAll(final int pageNumber, final int pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return userRepository.findAll(pageable).map(userMapper::toDto);
     }
 
     @Override
@@ -62,8 +81,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
     public boolean isAdmin(Long id) {
-        if (!userRepository.existsById(id)) {
+        if (!existsById(id)) {
             throw new NotFoundException("User not found with id: " + id);
         }
         return userRepository.existsByIdAndRole(id, UserRole.ADMIN);
@@ -74,8 +98,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsById(id);
     }
 
-    private UserEntity existsUserEntity(long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+    @Override
+    public UserEntity findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("User not found with id: " + id));
     }
 }
