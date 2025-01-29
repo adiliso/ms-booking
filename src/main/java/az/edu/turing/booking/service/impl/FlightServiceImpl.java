@@ -8,8 +8,8 @@ import az.edu.turing.booking.domain.repository.FlightSpecification;
 import az.edu.turing.booking.exception.BadRequestException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
+import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
-import az.edu.turing.booking.model.dto.request.FlightSearchRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.DetailedFlightResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Slf4j
 @Service
@@ -55,12 +56,16 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightResponse create(Long createdBy, FlightCreateRequest flightCreateRequest) {
-        if (userService.isAdmin(createdBy)) {
+    public FlightResponse create(Long userId, Long flightId, FlightCreateRequest flightCreateRequest) {
+        if (userService.isAdmin(userId)) {
             throw new BadRequestException("You cannot create a flight without an admin role");
         }
 
-        FlightEntity flight = flightMapper.toEntity(createdBy, flightCreateRequest);
+        if (flightRepository.existsById(flightId)) {
+            throw new BadRequestException("Flight already exists!");
+        }
+
+        FlightEntity flight = flightMapper.toEntity(userId, flightCreateRequest);
         FlightDetailsEntity detailsEntity = flightMapper.toDetailsEntity(flightCreateRequest);
 
         flight.setFlightDetails(detailsEntity);
@@ -72,9 +77,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightResponse update(Long updatedBy, Long flightId, FlightUpdateRequest flightUpdateRequest) {
+    public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest flightUpdateRequest) {
 
-        if (!userService.isAdmin(updatedBy)) {
+        if (!userService.isAdmin(userId)) {
             throw new BadRequestException("You cannot update a flight without an admin role");
         }
 
@@ -83,7 +88,7 @@ public class FlightServiceImpl implements FlightService {
         FlightEntity flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightId));
 
-        flight.setUpdatedBy(updatedBy);
+        flight.setUpdatedBy(userId);
         flight.setPrice(flightUpdateRequest.getPrice());
         detailsEntity.setAirline(flightUpdateRequest.getAirline());
         flight.setDepartureTime(flightUpdateRequest.getDepartureTime());
@@ -99,7 +104,7 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Page<FlightResponse> findAllInNext24Hours(Pageable pageable) {
+    public Page<FlightResponse> getAllInNext24Hours(Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next24Hours = now.plusHours(24);
         Page<FlightEntity> flights = flightRepository.findByDepartureTimeBetween(now, next24Hours, pageable);
@@ -123,19 +128,32 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Page<FlightResponse> search(FlightSearchRequest flightSearchRequest, Pageable pageable) {
-        Specification<FlightEntity> spec =
-                Specification.where(FlightSpecification
-                        .hasDepartureTimeBetween(flightSearchRequest.getDepartureDate().atStartOfDay()
-                                , flightSearchRequest.getArrivalDate().atStartOfDay())
-                        .and(FlightSpecification.hasPriceBetween(flightSearchRequest.getMinPrice()
-                                        , flightSearchRequest.getMaxPrice())
-                                .and(FlightSpecification
-                                        .hasOriginPoint(flightSearchRequest.getOriginPoint()))));
+    public Page<FlightResponse> search(FlightFilter filter, Pageable pageable) {
+        Specification<FlightEntity> spec = Specification.where(null);
 
-        log.info("Searching for flights...");
+        if (filter.getOriginPoints() != null && !filter.getOriginPoints().isEmpty()) {
+            spec = spec.and(FlightSpecification.hasOriginPoints(filter.getOriginPoints()));
+        }
+
+        if (filter.getDestinationPoints() != null && !filter.getDestinationPoints().isEmpty()) {
+            spec = spec.and(FlightSpecification.hasDestinationPoints(filter.getDestinationPoints()));
+        }
+
+        if (filter.getStartDepartureDate() != null || filter.getEndDepartureDate() != null) {
+            LocalDateTime start = filter.getStartDepartureDate() != null ?
+                    filter.getStartDepartureDate().atStartOfDay() : null;
+            LocalDateTime end = filter.getEndDepartureDate() != null ?
+                    filter.getEndDepartureDate().atTime(LocalTime.MAX) : null;
+            spec = spec.and(FlightSpecification.hasDepartureTimeBetween(start, end));
+        }
+
+        if (filter.getMinPrice() != null || filter.getMaxPrice() != null) {
+            spec = spec.and(FlightSpecification.hasPriceBetween(filter.getMinPrice(), filter.getMaxPrice()));
+        }
+
         return flightRepository.findAll(spec, pageable).map(flightMapper::toResponse);
     }
+
 
     private FlightDetailsEntity getFlightDetails(Long flightId) {
         return flightDetailsRepository.findById(flightId)
