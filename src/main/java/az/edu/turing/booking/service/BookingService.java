@@ -1,8 +1,8 @@
 package az.edu.turing.booking.service;
 
 import az.edu.turing.booking.model.dto.BookingDto;
-import az.edu.turing.booking.model.dto.requests.BookingCreateRequest;
-import az.edu.turing.booking.model.dto.requests.BookingUpdateRequest;
+import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
+import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import org.springframework.transaction.annotation.Transactional;
 
