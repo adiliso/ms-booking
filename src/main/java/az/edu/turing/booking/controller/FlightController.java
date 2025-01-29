@@ -3,7 +3,7 @@ package az.edu.turing.booking.controller;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
-import az.edu.turing.booking.model.dto.response.DetailedFlightResponse;
+import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
 import az.edu.turing.booking.service.FlightService;
 import jakarta.validation.Valid;
@@ -44,7 +44,7 @@ public class FlightController {
     }
 
     @GetMapping("/{flightId}/details")
-    public ResponseEntity<DetailedFlightResponse> getDetailedInfoById(@PathVariable Long flightId) {
+    public ResponseEntity<FlightDetailsResponse> getDetailedInfoById(@PathVariable Long flightId) {
         return ResponseEntity.ok(flightService.getDetailedInfoById(flightId));
     }
 
@@ -56,10 +56,9 @@ public class FlightController {
 
     @PostMapping
     public ResponseEntity<FlightResponse> create(@RequestHeader("X-User-Id") Long userId,
-                                                 @RequestParam Long flightId,
                                                  @Valid @RequestBody FlightCreateRequest flightCreateRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(flightService.create(userId, flightId, flightCreateRequest));
+                .body(flightService.create(userId, flightCreateRequest));
     }
 
     @PutMapping("/{flightId}")

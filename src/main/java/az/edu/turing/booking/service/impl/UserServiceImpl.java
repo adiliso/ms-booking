@@ -13,14 +13,17 @@ import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Transactional
     @Override
     public UserDto create(UserCreateRequest request) {
 
@@ -32,6 +35,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(userRepository.save(userEntity));
     }
 
+    @Transactional
     @Override
     public UserDto updateUsername(Long id, UsernameUpdateRequest request) {
 
@@ -41,6 +45,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(userEntity);
     }
 
+    @Transactional
     @Override
     public UserDto updateRole(Long id, UserRoleUpdateRequest request) {
 
@@ -51,11 +56,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserEntity findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
+    }
+
+    @Override
     public boolean isAdmin(Long id) {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("User not found with id: " + id);
         }
         return userRepository.existsByIdAndRole(id, UserRole.ADMIN);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
     }
 
     private UserEntity existsUserEntity(long id) {

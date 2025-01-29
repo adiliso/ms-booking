@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetailedFlightResponse {
+public class FlightDetailsResponse {
 
     private Long flightId;
     private LocalDate departureDate;

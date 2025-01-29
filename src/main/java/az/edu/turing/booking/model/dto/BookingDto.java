@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BookingDto {
 
-    private long id;
-    private long flightId;
-    private double totalPrice;
+    private Long id;
+    private Long flightId;
+    private Double totalPrice;
     private BookingStatus status;
 }
