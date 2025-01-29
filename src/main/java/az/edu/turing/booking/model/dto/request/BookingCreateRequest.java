@@ -1,4 +1,4 @@
-package az.edu.turing.booking.model.dto.requests;
+package az.edu.turing.booking.model.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

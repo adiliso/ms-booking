@@ -1,4 +1,4 @@
-package az.edu.turing.booking.model.dto.requests;
+package az.edu.turing.booking.model.dto.request;
 
 import az.edu.turing.booking.model.enums.BookingStatus;
 import jakarta.validation.constraints.Min;
