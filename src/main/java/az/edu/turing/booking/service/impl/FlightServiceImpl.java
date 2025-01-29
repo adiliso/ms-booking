@@ -6,6 +6,7 @@ import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.FlightSpecification;
 import az.edu.turing.booking.exception.AccessDeniedException;
+import az.edu.turing.booking.exception.AlreadyExistsException;
 import az.edu.turing.booking.exception.InvalidOperationException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
@@ -57,13 +58,13 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightResponse create(Long createdBy, FlightCreateRequest flightCreateRequest) {
-        if (userService.isAdmin(createdBy)) {
+    public FlightResponse create(Long userId, Long flightId, FlightCreateRequest flightCreateRequest) {
+        if (userService.isAdmin(userId)) {
             throw new AccessDeniedException("You cannot create a flight without an admin role");
         }
 
         if (flightRepository.existsById(flightId)) {
-            throw new BadRequestException("Flight already exists!");
+            throw new AlreadyExistsException("Flight already exists!");
         }
 
         FlightEntity flight = flightMapper.toEntity(userId, flightCreateRequest);
@@ -80,7 +81,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest flightUpdateRequest) {
 
-        if (!userService.isAdmin(updatedBy)) {
+        if (!userService.isAdmin(userId)) {
             throw new AccessDeniedException("You cannot update a flight without an admin role");
         }
 
