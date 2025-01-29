@@ -8,7 +8,7 @@ WORKDIR /
 COPY build/libs/ms-booking-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the application port
-EXPOSE 8081
+EXPOSE 8082
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
