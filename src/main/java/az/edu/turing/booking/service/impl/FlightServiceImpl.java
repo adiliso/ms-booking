@@ -6,7 +6,6 @@ import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.FlightSpecification;
 import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.AlreadyExistsException;
 import az.edu.turing.booking.exception.InvalidOperationException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
@@ -63,13 +62,9 @@ public class FlightServiceImpl implements FlightService {
 
     @Transactional
     @Override
-    public FlightResponse create(Long userId, Long flightId, FlightCreateRequest flightCreateRequest) {
-        if (userService.isAdmin(userId)) {
+    public FlightResponse create(Long userId, FlightCreateRequest flightCreateRequest) {
+        if (!userService.isAdmin(userId)) {
             throw new AccessDeniedException("You cannot create a flight without an admin role");
-        }
-
-        if (flightRepository.existsById(flightId)) {
-            throw new AlreadyExistsException("Flight already exists!");
         }
 
         FlightEntity flight = flightMapper.toEntity(userId, flightCreateRequest);
@@ -87,8 +82,6 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest request) {
 
-        if (!userService.isAdmin(userId)) {
-            throw new BadRequestException("You cannot update a flight without an admin role");
         if (!userService.isAdmin(userId)) {
             throw new AccessDeniedException("You cannot update a flight without an admin role");
         }
@@ -115,23 +108,19 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightResponse getInfoById(Long id) {
-        return flightRepository.findById(id)
-                .map(flightMapper::toResponse)
-                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id));
-    }
-
-    @Override
     public FlightEntity findById(Long id) {
         return flightRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id));
     }
 
     @Override
+    public FlightResponse getInfoById(Long id) {
+        return flightMapper.toResponse(findById(id));
+    }
+
+    @Override
     public FlightDetailsResponse getDetailedInfoById(Long id) {
-        return flightRepository.findById(id)
-                .map(flightMapper::toDetailedResponse)
-                .orElseThrow(() -> new NotFoundException("Flight details not found with id: " + id));
+        return flightMapper.toDetailedResponse(findById(id));
     }
 
     @Override
