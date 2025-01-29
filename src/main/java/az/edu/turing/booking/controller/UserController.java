@@ -30,12 +30,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/username")
     public ResponseEntity<UserDto> updateUsername(@PathVariable Long id, @Valid @RequestBody UsernameUpdateRequest request) {
         return ResponseEntity.ok(userService.updateUsername(id, request));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/role")
     public ResponseEntity<UserDto> updateUserRole(@PathVariable Long id, @Valid @RequestBody UserRoleUpdateRequest request) {
         return ResponseEntity.ok(userService.updateRole(id, request));
     }
