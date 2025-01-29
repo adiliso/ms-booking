@@ -3,12 +3,13 @@ package az.edu.turing.booking.mapper;
 import az.edu.turing.booking.domain.entity.FlightDetailsEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
-import az.edu.turing.booking.model.dto.response.DetailedFlightResponse;
+import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
+import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
-import org.springframework.data.repository.query.Param;
 
 @Mapper(componentModel = "spring")
 public interface FlightMapper {
@@ -18,12 +19,15 @@ public interface FlightMapper {
     @Mapping(target = "flightId", source = "id")
     @Mapping(target = "aircraft", source = "flightDetails.aircraft")
     @Mapping(target = "airline", source = "flightDetails.airline")
-    DetailedFlightResponse toDetailedResponse(FlightEntity flightEntity);
+    FlightDetailsResponse toDetailedResponse(FlightEntity flightEntity);
 
     FlightResponse toResponse(FlightEntity flightEntity);
 
-    @Mapping(target = "createdBy", source = "createdBy")
-    FlightEntity toEntity(@Param("createdBy") Long createdBy, FlightCreateRequest request);
+    FlightEntity toEntity(Long createdBy, FlightCreateRequest request);
 
     FlightDetailsEntity toDetailsEntity(FlightCreateRequest request);
+
+    void updateEntity(@MappingTarget FlightEntity entity, Long updatedBy, FlightUpdateRequest request);
+
+    void updateDetailsEntity(@MappingTarget FlightDetailsEntity entity, FlightUpdateRequest request);
 }

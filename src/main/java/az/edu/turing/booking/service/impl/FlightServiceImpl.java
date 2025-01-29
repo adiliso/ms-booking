@@ -13,7 +13,7 @@ import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
-import az.edu.turing.booking.model.dto.response.DetailedFlightResponse;
+import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
 import az.edu.turing.booking.service.FlightService;
 import az.edu.turing.booking.service.UserService;
@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,6 +31,7 @@ import java.time.LocalTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FlightServiceImpl implements FlightService {
 
     private final FlightDetailsRepository flightDetailsRepository;
@@ -37,6 +39,7 @@ public class FlightServiceImpl implements FlightService {
     private final FlightMapper flightMapper;
     private final UserService userService;
 
+    @Transactional
     @Override
     public Integer addSeats(Long flightId, Integer seats) {
         FlightDetailsEntity entity = getFlightDetails(flightId);
@@ -47,6 +50,7 @@ public class FlightServiceImpl implements FlightService {
         return finalFreeSeats;
     }
 
+    @Transactional
     @Override
     public Integer releaseSeats(Long flightId, Integer seats) {
         FlightDetailsEntity entity = getFlightDetails(flightId);
@@ -57,6 +61,7 @@ public class FlightServiceImpl implements FlightService {
         return finalFreeSeats;
     }
 
+    @Transactional
     @Override
     public FlightResponse create(Long userId, Long flightId, FlightCreateRequest flightCreateRequest) {
         if (userService.isAdmin(userId)) {
@@ -78,26 +83,20 @@ public class FlightServiceImpl implements FlightService {
         return flightMapper.toResponse(savedFlight);
     }
 
+    @Transactional
     @Override
-    public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest flightUpdateRequest) {
+    public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest request) {
 
+        if (!userService.isAdmin(userId)) {
+            throw new BadRequestException("You cannot update a flight without an admin role");
         if (!userService.isAdmin(userId)) {
             throw new AccessDeniedException("You cannot update a flight without an admin role");
         }
 
-        FlightDetailsEntity detailsEntity = getFlightDetails(flightId);
+        FlightEntity flight = findById(flightId);
 
-        FlightEntity flight = flightRepository.findById(flightId)
-                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightId));
-
-        flight.setUpdatedBy(userId);
-        flight.setPrice(flightUpdateRequest.getPrice());
-        detailsEntity.setAirline(flightUpdateRequest.getAirline());
-        flight.setDepartureTime(flightUpdateRequest.getDepartureTime());
-        detailsEntity.setAircraft(flightUpdateRequest.getAircraft());
-        flight.setArrivalTime(flightUpdateRequest.getArrivalTime());
-
-        flight.setFlightDetails(detailsEntity);
+        flightMapper.updateEntity(flight, userId, request);
+        flightMapper.updateDetailsEntity(getFlightDetails(flightId), request);
 
         FlightEntity updatedFlight = flightRepository.save(flight);
 
@@ -123,7 +122,13 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public DetailedFlightResponse getDetailedInfoById(Long id) {
+    public FlightEntity findById(Long id) {
+        return flightRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id));
+    }
+
+    @Override
+    public FlightDetailsResponse getDetailedInfoById(Long id) {
         return flightRepository.findById(id)
                 .map(flightMapper::toDetailedResponse)
                 .orElseThrow(() -> new NotFoundException("Flight details not found with id: " + id));
