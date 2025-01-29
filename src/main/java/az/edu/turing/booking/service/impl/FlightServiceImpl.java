@@ -5,7 +5,8 @@ import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.FlightSpecification;
-import az.edu.turing.booking.exception.BadRequestException;
+import az.edu.turing.booking.exception.AccessDeniedException;
+import az.edu.turing.booking.exception.InvalidOperationException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
@@ -39,7 +40,7 @@ public class FlightServiceImpl implements FlightService {
         FlightDetailsEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() + seats;
         if (entity.getTotalSeats() < finalFreeSeats) {
-            throw new BadRequestException("Cannot add seats!");
+            throw new InvalidOperationException("Cannot add seats!");
         }
         return finalFreeSeats;
     }
@@ -49,7 +50,7 @@ public class FlightServiceImpl implements FlightService {
         FlightDetailsEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() - seats;
         if (finalFreeSeats < 0) {
-            throw new BadRequestException("Cannot release seats!");
+            throw new InvalidOperationException("Cannot release seats!");
         }
         return finalFreeSeats;
     }
@@ -57,7 +58,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightResponse create(Long createdBy, FlightCreateRequest flightCreateRequest) {
         if (userService.isAdmin(createdBy)) {
-            throw new BadRequestException("You cannot create a flight without an admin role");
+            throw new AccessDeniedException("You cannot create a flight without an admin role");
         }
 
         FlightEntity flight = flightMapper.toEntity(createdBy, flightCreateRequest);
@@ -75,7 +76,7 @@ public class FlightServiceImpl implements FlightService {
     public FlightResponse update(Long updatedBy, Long flightId, FlightUpdateRequest flightUpdateRequest) {
 
         if (!userService.isAdmin(updatedBy)) {
-            throw new BadRequestException("You cannot update a flight without an admin role");
+            throw new AccessDeniedException("You cannot update a flight without an admin role");
         }
 
         FlightDetailsEntity detailsEntity = getFlightDetails(flightId);
