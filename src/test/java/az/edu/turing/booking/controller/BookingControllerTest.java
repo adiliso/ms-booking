@@ -2,28 +2,16 @@ package az.edu.turing.booking.controller;
 
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.model.dto.BookingDto;
-import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
-
-import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.impl.BookingServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-
 import java.util.List;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -50,7 +38,7 @@ public class BookingControllerTest {
         mockMvc.perform(get("/api/v1/bookings/users/{username}", "Ayten"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(new BookingDto()))))
-                .andDo(MockMvcResultHandlers.print());//why
+                .andDo(MockMvcResultHandlers.print());
 
         then(bookingService).should(times(1)).getBookingsByUsername("Ayten");
     }

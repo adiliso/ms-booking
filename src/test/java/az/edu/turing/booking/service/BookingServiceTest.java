@@ -8,7 +8,6 @@ import az.edu.turing.booking.exception.AccessDeniedException;
 import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.BookingMapper;
 import az.edu.turing.booking.model.dto.BookingDto;
-import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.impl.BookingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -141,14 +140,5 @@ public class BookingServiceTest {
 
         assertThrows(AccessDeniedException.class, () -> bookingService.updateStatus(1L, 1L, BookingStatus.CANCELLED));
     }
-
-//    @Test
-//    void update_ShouldThrowNotFoundException_WhenBookingNotFound() {
-//        given(bookingRepository.findById(anyLong())).willReturn(Optional.empty());
-//
-//        BookingUpdateRequest request = new BookingUpdateRequest();
-//
-//        assertThrows(NotFoundException.class, () -> bookingService.update(1L, 1L, request));
-//    }
 
 }
