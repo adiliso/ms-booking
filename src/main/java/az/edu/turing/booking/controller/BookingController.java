@@ -7,7 +7,6 @@ import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.impl.BookingServiceImpl;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,20 +35,20 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<BookingDto> createBooking(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("User-Id") Long userId,
             @Valid @RequestBody BookingCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(userId, request));
     }
 
     @PutMapping("/{bookingId}")
     public ResponseEntity<BookingDto> updateBookingById(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("User-Id") Long userId,
             @PathVariable Long bookingId,
             @Valid @RequestBody BookingUpdateRequest request) {
         return ResponseEntity.ok(bookingService.update(userId, bookingId, request));
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/users/{username}")
     public ResponseEntity<Collection<BookingDto>> getBookingsByUsername(@PathVariable String username) {
         return ResponseEntity.ok(bookingService.getBookingsByUsername(username));
     }
@@ -61,9 +60,9 @@ public class BookingController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<BookingDto> updateBookingStatus(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("User-Id") Long userId,
             @PathVariable Long id,
-            @RequestParam @NotNull BookingStatus status) {
+            @RequestParam BookingStatus status) {
         return ResponseEntity.ok(bookingService.updateStatus(userId, id, status));
     }
 

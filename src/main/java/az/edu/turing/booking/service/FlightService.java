@@ -21,11 +21,9 @@ public interface FlightService {
 
     Page<FlightResponse> getAllInNext24Hours(Pageable pageable);
 
-    FlightResponse getInfoById(Long flightId);
-
     FlightEntity findById(Long id);
 
-    FlightDetailsResponse getDetailedInfoById(Long id);
+    FlightDetailsResponse getInfoById(Long id);
 
     Page<FlightResponse> search(FlightFilter filter, Pageable pageable);
 }
