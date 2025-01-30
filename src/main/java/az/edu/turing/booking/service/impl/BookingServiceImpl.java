@@ -1,7 +1,6 @@
 package az.edu.turing.booking.service.impl;
 
 import az.edu.turing.booking.domain.entity.BookingEntity;
-import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.repository.BookingRepository;
 import az.edu.turing.booking.exception.AccessDeniedException;
 import az.edu.turing.booking.exception.InvalidOperationException;
@@ -10,6 +9,7 @@ import az.edu.turing.booking.mapper.BookingMapper;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
+import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.BookingService;
 import az.edu.turing.booking.service.FlightService;
@@ -37,22 +37,22 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto create(Long userId, BookingCreateRequest request) {
         userExistsById(userId);
 
-        FlightEntity flight = flightService.findById(request.getFlightId());
+        FlightDetailsResponse flight = flightService.getInfoById(request.getFlightId());
 
         if (flight.getDepartureTime().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new InvalidOperationException("Too late booking for flight");
         }
 
-        if (flight.getFlightDetails().getFreeSeats() < request.getNumberOfPassengers()) {
+        if (flight.getFreeSeats() < request.getNumberOfPassengers()) {
             throw new InvalidOperationException(String.format("There are only %d free seats in this flight",
-                    flight.getFlightDetails().getFreeSeats()));
+                    flight.getFreeSeats()));
         }
 
         BookingEntity booking = bookingMapper.toEntity(userId, request);
         request.getUsernameOfPassengers()
                 .forEach(p -> booking.addPassenger(userService.findByUsername(p)));
 
-        flightService.releaseSeats(flight.getId(), request.getNumberOfPassengers());
+        flightService.releaseSeats(flight.getFlightId(), request.getNumberOfPassengers());
 
         return bookingMapper.toDto(bookingRepository.save(booking));
     }

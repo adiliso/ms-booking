@@ -108,13 +108,6 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightEntity findById(Long id) {
-        return flightRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id));
-    }
-
-
-    @Override
     public FlightDetailsResponse getInfoById(Long id) {
         return flightMapper.toDetailedResponse(findById(id));
     }
@@ -146,10 +139,14 @@ public class FlightServiceImpl implements FlightService {
         return flightRepository.findAll(spec, pageable).map(flightMapper::toResponse);
     }
 
-
     private FlightDetailsEntity getFlightDetails(Long flightId) {
         return flightDetailsRepository.findById(flightId)
                 .orElseThrow(() ->
                         new NotFoundException("Flight details not found with id: " + flightId));
+    }
+
+    private FlightEntity findById(Long id) {
+        return flightRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id));
     }
 }

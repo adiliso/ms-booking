@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
 public class FlightResponse {
 
     private Long flightId;
-    private LocalDate departureDate;
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private City originPoint;

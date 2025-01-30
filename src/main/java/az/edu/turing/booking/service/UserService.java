@@ -17,8 +17,6 @@ public interface UserService {
 
     UserDto getById(Long id);
 
-    UserEntity findById(Long id);
-
     UserEntity findByUsername(String username);
 
     UserDto getByUsername(String username);

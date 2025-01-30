@@ -1,6 +1,5 @@
 package az.edu.turing.booking.service;
 
-import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
@@ -20,8 +19,6 @@ public interface FlightService {
     FlightResponse update(Long userId, Long id, FlightUpdateRequest flightUpdateRequest);
 
     Page<FlightResponse> getAllInNext24Hours(Pageable pageable);
-
-    FlightEntity findById(Long id);
 
     FlightDetailsResponse getInfoById(Long id);
 
