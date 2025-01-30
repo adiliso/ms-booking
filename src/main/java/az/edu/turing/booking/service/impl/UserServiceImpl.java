@@ -11,7 +11,6 @@ import az.edu.turing.booking.model.dto.request.UserRoleUpdateRequest;
 import az.edu.turing.booking.model.dto.request.UsernameUpdateRequest;
 import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -85,11 +84,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("User with id " + id + " not found");
+            throw new NotFoundException("User with id " + id + " not found");
         }
         userRepository.deleteById(id);
     }
-
 
     @Override
     public boolean isAdmin(Long id) {
