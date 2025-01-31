@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 004
+      id: 004_create_bookings_tables
       author: Aytan Babakishiyeva
       changes:
         - createTable:
@@ -42,11 +42,13 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
+                  defaultValueComputed: "NOW()"
               - column:
                   name: updated_at
                   type: timestamp
                   constraints:
                     nullable: true
+                  defaultValueComputed: "NOW()"
         - addForeignKeyConstraint:
             baseTableName: bookings
             baseColumnNames: flight_id

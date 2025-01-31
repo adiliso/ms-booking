@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 003
+      id: 003_create_users_table
       author: Aytan Babakishiyeva
       changes:
         - createTable:
@@ -38,8 +38,10 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
+                  defaultValueComputed: "NOW()"
               - column:
                   name: updated_at
                   type: timestamp
                   constraints:
                     nullable: true
+                  defaultValueComputed: "NOW()"
