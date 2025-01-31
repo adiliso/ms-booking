@@ -19,7 +19,6 @@ import java.util.List;
 
 public class TestConstants {
 
-    public static Duration DURATION;
     public static final Long USER_ID = 1L;
     public static final Long FLIGHT_ID = 1L;
     public static final Double PRICE = 100.10;
@@ -31,6 +30,7 @@ public class TestConstants {
     public static final AircraftType AIRCRAFT = AircraftType.BOEING;
     public static final LocalDateTime ARRIVAL_TIME = LocalDateTime.now().plusDays(2);
     public static final LocalDateTime DEPARTURE_TIME = LocalDateTime.now().plusDays(1);
+    public static Duration DURATION = Duration.between(ARRIVAL_TIME, DEPARTURE_TIME);
 
 
     public static FlightResponse getFlightResponse() {
