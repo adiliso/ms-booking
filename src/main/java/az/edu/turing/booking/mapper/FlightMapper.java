@@ -19,8 +19,11 @@ public interface FlightMapper {
     @Mapping(target = "flightId", source = "id")
     @Mapping(target = "aircraft", source = "flightDetails.aircraft")
     @Mapping(target = "airline", source = "flightDetails.airline")
+    @Mapping(target = "freeSeats", source = "flightDetails.freeSeats")
     FlightDetailsResponse toDetailedResponse(FlightEntity flightEntity);
 
+    @Mapping(target = "flightId", source = "id")
+    @Mapping(target = "freeSeats", source = "flightDetails.freeSeats")
     FlightResponse toResponse(FlightEntity flightEntity);
 
     FlightEntity toEntity(Long createdBy, FlightCreateRequest request);

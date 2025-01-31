@@ -125,6 +125,8 @@ class FlightServiceTest {
 
         given(userService.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.save(any(FlightEntity.class))).willReturn(flight);
+        given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight));
+        given(flightDetailsRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight.getFlightDetails()));
 
         FlightResponse response = flightService.update(USER_ID, FLIGHT_ID, updateRequest);
 
