@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -27,7 +26,6 @@ public class FlightDetailsResponse {
     private Double price;
     private AircraftType aircraft;
     private Airline airline;
-    private Duration duration;
 
     public Duration getDuration() {
         if (departureTime != null && arrivalTime != null) {
