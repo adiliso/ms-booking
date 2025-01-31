@@ -26,6 +26,7 @@ public class FlightDetailsResponse {
     private Double price;
     private AircraftType aircraft;
     private Airline airline;
+    private Duration duration;
 
     public Duration getDuration() {
         if (departureTime != null && arrivalTime != null) {
