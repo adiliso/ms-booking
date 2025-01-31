@@ -3,6 +3,7 @@ package az.edu.turing.booking.model.enums;
 public enum City {
 
     BAKU,
+    ISTANBUL,
     NEW_YORK,
     LOS_ANGELES,
     CHICAGO,
