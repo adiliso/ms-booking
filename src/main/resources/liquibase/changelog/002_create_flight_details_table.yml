@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 002
+      id: 002_create_flight_details_table
       author: Aytan Babakishiyeva
       changes:
         - createTable:
@@ -27,11 +27,13 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
+                  defaultValueComputed: "NOW()"
               - column:
                   name: updated_at
                   type: timestamp
                   constraints:
                     nullable: true
+                  defaultValueComputed: "NOW()"
               - column:
                   name: total_seats
                   type: int

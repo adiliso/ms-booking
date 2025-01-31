@@ -26,5 +26,11 @@ public class FlightDetailsResponse {
     private Double price;
     private AircraftType aircraft;
     private Airline airline;
-    private Duration duration = Duration.between(departureTime, arrivalTime);
+  
+    public Duration getDuration() {
+        if (departureTime != null && arrivalTime != null) {
+            return Duration.between(departureTime, arrivalTime);
+        }
+        return Duration.ZERO;
+    }
 }
