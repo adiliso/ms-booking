@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 public class FlightDetailsResponse {
 
     private Long flightId;
-    private LocalDate departureDate;
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private City originPoint;
@@ -28,5 +26,5 @@ public class FlightDetailsResponse {
     private Double price;
     private AircraftType aircraft;
     private Airline airline;
-    private Duration duration = Duration.between(departureDate, arrivalTime);
+    private Duration duration = Duration.between(departureTime, arrivalTime);
 }
