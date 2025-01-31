@@ -80,8 +80,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User with id " + id + " not found");
+        }
         userRepository.deleteById(id);
     }
 
