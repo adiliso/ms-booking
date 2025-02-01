@@ -6,24 +6,8 @@ databaseChangeLog:
         - sql:
             sql: |
               INSERT INTO public.users (id, username, role) VALUES
-              (1, 'john.doe1@example.com', 'ADMIN'),
-              (2, 'jane.smith2@example.com', 'PASSENGER'),
-              (3, 'alice.jones3@example.com', 'ADMIN'),
-              (4, 'bob.brown4@example.com', 'PASSENGER'),
-              (5, 'charlie.davis5@example.com', 'PASSENGER'),
-              (6, 'eva.martin6@example.com', 'ADMIN'),
-              (7, 'frank.wilson7@example.com', 'PASSENGER'),
-              (8, 'george.harris8@example.com', 'ADMIN'),
-              (9, 'hannah.moore9@example.com', 'PASSENGER'),
-              (10, 'ian.taylor10@example.com', 'PASSENGER'),
-              (11, 'julia.white11@example.com', 'ADMIN'),
-              (12, 'kevin.thomas12@example.com', 'PASSENGER'),
-              (13, 'laura.hall13@example.com', 'PASSENGER'),
-              (14, 'michael.allen14@example.com', 'ADMIN'),
-              (15, 'nina.king15@example.com', 'PASSENGER'),
-              (16, 'oliver.scott16@example.com', 'PASSENGER'),
-              (17, 'paul.adams17@example.com', 'ADMIN'),
-              (18, 'quincy.baker18@example.com', 'PASSENGER'),
-              (19, 'rachel.carter19@example.com', 'PASSENGER'),
-              (20, 'steven.davis20@example.com', 'ADMIN');
-      
+              (1, 'admin@gmail.com', 'ADMIN');
+
+        - sql:
+            sql: |
+              SELECT setval('flights_id_seq', (SELECT MAX(id) FROM flights));

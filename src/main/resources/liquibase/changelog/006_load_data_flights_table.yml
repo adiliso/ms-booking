@@ -45,3 +45,7 @@ databaseChangeLog:
               (28, 1, 'PRAGUE', 'VIENNA', NOW() + INTERVAL '1 hour', NOW() + INTERVAL '2 hours', 220.0),
               (29, 1, 'MEXICO_CITY', 'LOS_ANGELES', NOW() + INTERVAL '2 hours', NOW() + INTERVAL '5 hours', 310.0),
               (30, 1, 'ISTANBUL', 'SYDNEY', NOW() + INTERVAL '5 hours', NOW() + INTERVAL '19 hours', 580.0);
+
+        - sql:
+            sql: |
+              SELECT setval('flights_id_seq', (SELECT MAX(id) FROM flights));
