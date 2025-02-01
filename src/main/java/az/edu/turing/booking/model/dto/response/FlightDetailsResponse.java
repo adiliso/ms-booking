@@ -26,12 +26,15 @@ public class FlightDetailsResponse {
     private Double price;
     private AircraftType aircraft;
     private Airline airline;
-    private Duration duration;
+    private String duration;
 
-    public Duration getDuration() {
+    public String getDuration() {
         if (departureTime != null && arrivalTime != null) {
-            return Duration.between(departureTime, arrivalTime);
+            Duration duration = Duration.between(departureTime, arrivalTime);
+            long hours = duration.toHours();
+            long minutes = duration.toMinutesPart();
+            return hours + "h " + minutes + "m";
         }
-        return Duration.ZERO;
+        return "0h 0m";
     }
 }
