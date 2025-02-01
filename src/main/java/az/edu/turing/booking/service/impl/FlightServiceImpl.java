@@ -109,7 +109,8 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDetailsResponse getInfoById(Long id) {
-        return flightMapper.toDetailedResponse(findById(id));
+        return flightMapper.toDetailedResponse(flightRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id)));
     }
 
     @Override

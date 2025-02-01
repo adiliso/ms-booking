@@ -16,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class TestConstants {
+public final class TestConstants {
 
     public static final Long USER_ID = 1L;
     public static final Long FLIGHT_ID = 1L;
@@ -29,7 +29,6 @@ public class TestConstants {
     public static final AircraftType AIRCRAFT = AircraftType.BOEING;
     public static final LocalDateTime ARRIVAL_TIME = LocalDateTime.now().plusDays(2);
     public static final LocalDateTime DEPARTURE_TIME = LocalDateTime.now().plusDays(1);
-//    public static Duration DURATION = Duration.between(ARRIVAL_TIME, DEPARTURE_TIME);
 
     public static FlightResponse getFlightResponse() {
         return FlightResponse.builder()

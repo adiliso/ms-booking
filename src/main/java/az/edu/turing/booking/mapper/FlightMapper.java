@@ -6,12 +6,13 @@ import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface FlightMapper {
 
     FlightMapper INSTANCE = Mappers.getMapper(FlightMapper.class);
