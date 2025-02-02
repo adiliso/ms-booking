@@ -19,6 +19,7 @@ import az.edu.turing.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -102,7 +103,8 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Page<FlightResponse> getAllInNext24Hours(Pageable pageable) {
+    public Page<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber, pageSize);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next24Hours = now.plusHours(24);
         Page<FlightEntity> flights = flightRepository.findByDepartureTimeBetween(now, next24Hours, pageable);
@@ -118,7 +120,8 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Page<FlightResponse> search(FlightFilter filter, Pageable pageable) {
+    public Page<FlightResponse> search(FlightFilter filter, final int pageNumber, final int pageSize) {
+        final Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Specification<FlightEntity> spec = Specification.where(null);
 
         if (filter.getOriginPoints() != null && !filter.getOriginPoints().isEmpty()) {

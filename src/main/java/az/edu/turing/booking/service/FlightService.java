@@ -6,7 +6,6 @@ import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface FlightService {
 
@@ -18,9 +17,9 @@ public interface FlightService {
 
     FlightResponse update(Long userId, Long id, FlightUpdateRequest flightUpdateRequest);
 
-    Page<FlightResponse> getAllInNext24Hours(Pageable pageable);
+    Page<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize);
 
     FlightDetailsResponse getInfoById(Long id);
 
-    Page<FlightResponse> search(FlightFilter filter, Pageable pageable);
+    Page<FlightResponse> search(FlightFilter filter, final int pageNumber, final int pageSize);
 }
