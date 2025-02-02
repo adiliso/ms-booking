@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 005_create_bookings_passengers_tables
+      id: 005_create_booking_users_table
       author: Aytan Babakishiyeva
       changes:
         - createTable:
-            tableName: bookings_passengers
+            tableName: booking_users
             columns:
               - column:
                   name: booking_id
@@ -12,19 +12,19 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: passenger_id
+                  name: user_id
                   type: bigint
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
-            baseTableName: bookings_passengers
+            baseTableName: booking_users
             baseColumnNames: booking_id
-            referencedTableName: bookings
+            referencedTableName: booking
             referencedColumnNames: id
-            constraintName: fk_bookings_passengers_booking
+            constraintName: fk_booking_users_booking
         - addForeignKeyConstraint:
-            baseTableName: bookings_passengers
-            baseColumnNames: passenger_id
+            baseTableName: booking_users
+            baseColumnNames: user_id
             referencedTableName: users
             referencedColumnNames: id
-            constraintName: fk_bookings_passengers_user
+            constraintName: fk_booking_users_user

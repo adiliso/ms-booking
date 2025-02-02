@@ -1,21 +1,21 @@
 databaseChangeLog:
   - changeSet:
-      id: 006_load_data_flights_table
+      id: 007_load_data_flight_table
       author: Adil Ismayilov
       runAlways: true
       changes:
         - sql:
             sql: |
-              ALTER TABLE flights DISABLE TRIGGER ALL;
+              ALTER TABLE flight DISABLE TRIGGER ALL;
         - sql:
             sql: |
-              DELETE FROM flights;
+              DELETE FROM flight;
         - sql:
             sql: |
-              ALTER TABLE flights ENABLE TRIGGER ALL;
+              ALTER TABLE flight ENABLE TRIGGER ALL;
         - sql:
             sql: |
-              INSERT INTO flights (id, created_by, origin_point, destination_point, departure_time, arrival_time, price) VALUES
+              INSERT INTO flight (id, created_by, origin_point, destination_point, departure_time, arrival_time, price) VALUES
               (1, 1, 'BAKU', 'ISTANBUL', NOW() + INTERVAL '1 hour', NOW() + INTERVAL '3 hours', 200.0),
               (2, 1, 'LONDON', 'NEW_YORK', NOW() + INTERVAL '2 hours', NOW() + INTERVAL '8 hours', 350.0),
               (3, 1, 'PARIS', 'TOKYO', NOW() + INTERVAL '3 hours', NOW() + INTERVAL '14 hours', 500.0),
@@ -50,4 +50,4 @@ databaseChangeLog:
 
         - sql:
             sql: |
-              SELECT setval('flights_id_seq', (SELECT MAX(id) FROM flights));
+              SELECT setval('flight_id_seq', (SELECT MAX(id) FROM flight));

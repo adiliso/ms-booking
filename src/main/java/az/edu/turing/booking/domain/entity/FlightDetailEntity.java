@@ -25,9 +25,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "flight_details")
+@Table(name = "flight_detail")
 @EqualsAndHashCode(callSuper = true, exclude = "flight")
-public class FlightDetailsEntity extends BaseEntity {
+public class FlightDetailEntity extends BaseEntity {
 
     @Id
     @Column(name = "flight_id")

@@ -1,6 +1,6 @@
 package az.edu.turing.booking.model.enums;
 
-public enum UserRole {
+public enum UserStatus {
 
-    ADMIN, USER
+    ACTIVE, DELETED
 }

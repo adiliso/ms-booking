@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006_load_data_users_table
+      author: Adil Ismayilov
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO public.users (id, username, password, role, status) VALUES
+              (1, 'admin@gmail.com', '6l5UXdbzqrZQRUPU+kbIOVPm9hAQbjScXYB7/RV8VHA=', 'ADMIN', 'ACTIVE');
+
+        - sql:
+            sql: |
+              SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));

@@ -1,15 +1,15 @@
 databaseChangeLog:
   - changeSet:
-      id: 008_load_data_flight_details_table
+      id: 008_load_data_flight_detail_table
       author: Adil Ismayilov
       changes:
         - sql:
             sql: |
-              INSERT INTO flight_details (flight_id, total_seats, free_seats, airline, aircraft_type) VALUES
+              INSERT INTO flight_detail (flight_id, total_seats, free_seats, airline, aircraft_type) VALUES
               (1, 180, 180, 'TURKISH_AIRLINES', 'BOEING_737'),
               (2, 250, 250, 'BRITISH_AIRWAYS', 'BOEING_777'),
               (3, 280, 280, 'AIR_FRANCE', 'AIRBUS_A350'),
-              (4, 220, 220, 'LUFTHANSA', 'BOEING_787'),
+              (4, 220, 220, 'AZAL', 'BOEING_787'),
               (5, 320, 320, 'QANTAS', 'AIRBUS_A380'),
               (6, 260, 260, 'AEROFLOT', 'BOEING_767'),
               (7, 270, 270, 'IBERIA', 'AIRBUS_A330'),

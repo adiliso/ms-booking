@@ -19,7 +19,15 @@ databaseChangeLog:
                     unique: true
                     nullable: false
               - column:
+                  name: password
+                  type: varchar(64)
+              - column:
                   name: role
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
                   type: varchar(255)
                   constraints:
                     nullable: false

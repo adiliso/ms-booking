@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 001_create_flights_table
+      id: 001_create_flight_table
       author: Aytan Babakishiyeva
       changes:
         - createTable:
-            tableName: flights
+            tableName: flight
             columns:
               - column:
                   name: id

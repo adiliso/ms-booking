@@ -46,6 +46,17 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<GlobalErrorResponse> handleInvalidInputException(InvalidInputException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).
+                body(GlobalErrorResponse.builder()
+                        .errorCode(ErrorCode.INVALID_INPUT)
+                        .errorMessage(e.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .requestId(UUID.randomUUID())
+                        .build());
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<GlobalErrorResponse> handleAccessDeniedExceptionException(AccessDeniedException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).
