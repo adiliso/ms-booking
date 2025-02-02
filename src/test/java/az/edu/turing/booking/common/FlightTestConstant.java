@@ -16,8 +16,10 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public final class TestConstants {
+public final class FlightTestConstant {
 
+    public static final Integer PAGE_SIZE = 10;
+    public static final Integer PAGE_NUMBER = 0;
     public static final Long USER_ID = 1L;
     public static final Long FLIGHT_ID = 1L;
     public static final Double PRICE = 100.10;

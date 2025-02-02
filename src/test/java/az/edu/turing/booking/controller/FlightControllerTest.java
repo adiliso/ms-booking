@@ -8,23 +8,26 @@ import az.edu.turing.booking.model.dto.response.FlightResponse;
 import az.edu.turing.booking.service.FlightService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static az.edu.turing.booking.common.TestConstants.FLIGHT_ID;
-import static az.edu.turing.booking.common.TestConstants.USER_ID;
-import static az.edu.turing.booking.common.TestConstants.getFlightCreateRequest;
-import static az.edu.turing.booking.common.TestConstants.getFlightDetailsResponse;
-import static az.edu.turing.booking.common.TestConstants.getFlightResponse;
-import static az.edu.turing.booking.common.TestConstants.getFlightResponseWithPage;
-import static az.edu.turing.booking.common.TestConstants.getFlightUpdateRequest;
+import static az.edu.turing.booking.common.FlightTestConstant.FLIGHT_ID;
+import static az.edu.turing.booking.common.FlightTestConstant.PAGE_NUMBER;
+import static az.edu.turing.booking.common.FlightTestConstant.PAGE_SIZE;
+import static az.edu.turing.booking.common.FlightTestConstant.USER_ID;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightCreateRequest;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightDetailsResponse;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightResponse;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightResponseWithPage;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightUpdateRequest;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -49,18 +52,18 @@ class FlightControllerTest {
 
     @Test
     void getAllInNext24Hours_Should_Return_Success() throws Exception {
-        Pageable pageable = Pageable.ofSize(20);
 
-        Page<FlightResponse> mockPage = getFlightResponseWithPage(Pageable.ofSize(10));
-        given(flightService.getAllInNext24Hours(any(Pageable.class)))
-                .willReturn(mockPage);
-
+        Page<FlightResponse> mockPage =
+                getFlightResponseWithPage(PageRequest.of(PAGE_NUMBER, PAGE_SIZE));
+        given(flightService.getAllInNext24Hours(
+                PAGE_NUMBER, PAGE_SIZE)).willReturn(mockPage);
         mockMvc.perform(get("/api/v1/flights"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].flightId").value(FLIGHT_ID));
 
-        then(flightService).should(times(1)).getAllInNext24Hours(pageable);
+        then(flightService).should(times(1))
+                .getAllInNext24Hours(PAGE_NUMBER, PAGE_SIZE);
     }
 
     @Test
@@ -87,16 +90,18 @@ class FlightControllerTest {
     @Test
     void search_Should_Return_Success() throws Exception {
         FlightFilter filter = new FlightFilter();
-        Pageable pageable = Pageable.ofSize(10);
+        Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
 
-        given(flightService.search(filter, pageable)).willReturn(getFlightResponseWithPage(pageable));
+        given(flightService.search(filter, PAGE_NUMBER, PAGE_SIZE))
+                .willReturn(getFlightResponseWithPage(pageable));
 
         mockMvc.perform(get("/api/v1/flights/search"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper
                         .writeValueAsString(getFlightResponseWithPage(pageable))));
 
-        then(flightService).should(times(1)).search(filter, pageable);
+        then(flightService).should(times(1))
+                .search(filter, PAGE_NUMBER, PAGE_SIZE);
     }
 
     @Test

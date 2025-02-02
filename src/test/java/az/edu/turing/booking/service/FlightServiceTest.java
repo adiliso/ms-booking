@@ -33,14 +33,16 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import java.util.Optional;
 
-import static az.edu.turing.booking.common.TestConstants.FLIGHT_ID;
-import static az.edu.turing.booking.common.TestConstants.USER_ID;
-import static az.edu.turing.booking.common.TestConstants.getFlightCreateRequest;
-import static az.edu.turing.booking.common.TestConstants.getFlightDetailsEntity;
-import static az.edu.turing.booking.common.TestConstants.getFlightEntity;
-import static az.edu.turing.booking.common.TestConstants.getFlightEntityWithPage;
-import static az.edu.turing.booking.common.TestConstants.getFlightResponseWithPage;
-import static az.edu.turing.booking.common.TestConstants.getFlightUpdateRequest;
+import static az.edu.turing.booking.common.FlightTestConstant.FLIGHT_ID;
+import static az.edu.turing.booking.common.FlightTestConstant.PAGE_NUMBER;
+import static az.edu.turing.booking.common.FlightTestConstant.PAGE_SIZE;
+import static az.edu.turing.booking.common.FlightTestConstant.USER_ID;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightCreateRequest;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightDetailsEntity;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightEntity;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightEntityWithPage;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightResponseWithPage;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -80,7 +82,7 @@ class FlightServiceTest {
         given(flightRepository.findByDepartureTimeBetween(any(), any(), any()))
                 .willReturn(getFlightEntityWithPage(pageable));
 
-        Page<FlightResponse> result = flightService.getAllInNext24Hours(pageable);
+        Page<FlightResponse> result = flightService.getAllInNext24Hours(PAGE_NUMBER, PAGE_SIZE);
 
         Assertions.assertNotNull(result);
         then(flightRepository).should(times(1)).findByDepartureTimeBetween(any(), any(), any());
@@ -198,7 +200,7 @@ class FlightServiceTest {
             flightSpecMock.when(() -> FlightSpecification.hasDepartureTimeBetween(any(), any())).thenReturn(specMock);
             flightSpecMock.when(() -> FlightSpecification.hasPriceBetween(any(), any())).thenReturn(specMock);
 
-            Page<FlightResponse> response = flightService.search(filter, pageable);
+            Page<FlightResponse> response = flightService.search(filter, PAGE_NUMBER, PAGE_SIZE);
 
             Assertions.assertNotNull(response);
             Assertions.assertEquals(getFlightResponseWithPage(pageable).getContent(), response.getContent());
