@@ -10,4 +10,4 @@ databaseChangeLog:
 
         - sql:
             sql: |
-              SELECT setval('flights_id_seq', (SELECT MAX(id) FROM flights));
+              SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
