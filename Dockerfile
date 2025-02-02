@@ -1,14 +1,3 @@
-# Use the desired JDK version
-FROM eclipse-temurin:21-jre-alpine
-
-# Set the working directory
-WORKDIR /
-
-# Copy the application JAR file
+FROM openjdk:11.0.7-jre-slim
 COPY build/libs/ms-booking-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose the application port
-EXPOSE 8080
-
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/ms-booking-0.0.1-SNAPSHOT.jar"]
