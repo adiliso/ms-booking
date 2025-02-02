@@ -25,8 +25,8 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "flights")
-@EqualsAndHashCode(callSuper = true, exclude = "flightDetails")
+@Table(name = "flight")
+@EqualsAndHashCode(callSuper = true, exclude = "flightDetail")
 public class FlightEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
@@ -48,16 +48,16 @@ public class FlightEntity extends BaseEntity {
 
     @OneToOne(mappedBy = "flight", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
-    private FlightDetailsEntity flightDetails;
+    private FlightDetailEntity flightDetail;
 
-    public void setFlightDetails(FlightDetailsEntity flightDetails) {
-        if (flightDetails == null) {
-            if (this.flightDetails != null) {
-                this.flightDetails.setFlight(null);
+    public void setFlightDetail(FlightDetailEntity flightDetail) {
+        if (flightDetail == null) {
+            if (this.flightDetail != null) {
+                this.flightDetail.setFlight(null);
             }
         } else {
-            flightDetails.setFlight(this);
+            flightDetail.setFlight(this);
         }
-        this.flightDetails = flightDetails;
+        this.flightDetail = flightDetail;
     }
 }

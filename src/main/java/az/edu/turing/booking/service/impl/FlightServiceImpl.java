@@ -1,6 +1,6 @@
 package az.edu.turing.booking.service.impl;
 
-import az.edu.turing.booking.domain.entity.FlightDetailsEntity;
+import az.edu.turing.booking.domain.entity.FlightDetailEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
@@ -42,22 +42,26 @@ public class FlightServiceImpl implements FlightService {
     @Transactional
     @Override
     public Integer addSeats(Long flightId, Integer seats) {
-        FlightDetailsEntity entity = getFlightDetails(flightId);
+        FlightDetailEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() + seats;
         if (entity.getTotalSeats() < finalFreeSeats) {
             throw new InvalidOperationException("Cannot add seats!");
         }
+        entity.setFreeSeats(finalFreeSeats);
+
         return finalFreeSeats;
     }
 
     @Transactional
     @Override
     public Integer releaseSeats(Long flightId, Integer seats) {
-        FlightDetailsEntity entity = getFlightDetails(flightId);
+        FlightDetailEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() - seats;
         if (finalFreeSeats < 0) {
             throw new InvalidOperationException("Cannot release seats!");
         }
+        entity.setFreeSeats(finalFreeSeats);
+
         return finalFreeSeats;
     }
 
@@ -69,9 +73,9 @@ public class FlightServiceImpl implements FlightService {
         }
 
         FlightEntity flight = flightMapper.toEntity(userId, flightCreateRequest);
-        FlightDetailsEntity detailsEntity = flightMapper.toDetailsEntity(flightCreateRequest);
+        FlightDetailEntity detailsEntity = flightMapper.toDetailsEntity(flightCreateRequest);
 
-        flight.setFlightDetails(detailsEntity);
+        flight.setFlightDetail(detailsEntity);
 
         FlightEntity savedFlight = flightRepository.save(flight);
 
@@ -143,7 +147,7 @@ public class FlightServiceImpl implements FlightService {
         return flightRepository.findAll(spec, pageable).map(flightMapper::toResponse);
     }
 
-    private FlightDetailsEntity getFlightDetails(Long flightId) {
+    private FlightDetailEntity getFlightDetails(Long flightId) {
         return flightDetailsRepository.findById(flightId)
                 .orElseThrow(() ->
                         new NotFoundException("Flight details not found with id: " + flightId));

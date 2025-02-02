@@ -128,7 +128,7 @@ class FlightServiceTest {
         given(userService.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.save(any(FlightEntity.class))).willReturn(flight);
         given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight));
-        given(flightDetailsRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight.getFlightDetails()));
+        given(flightDetailsRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight.getFlightDetail()));
 
         FlightResponse response = flightService.update(USER_ID, FLIGHT_ID, updateRequest);
 
@@ -166,7 +166,7 @@ class FlightServiceTest {
     @Test
     void getInfoById_Should_Return_Success() {
         FlightEntity flight = getFlightEntity();
-        flight.setFlightDetails(getFlightDetailsEntity());
+        flight.setFlightDetail(getFlightDetailsEntity());
         given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight));
 
         FlightDetailsResponse response = flightService.getInfoById(FLIGHT_ID);

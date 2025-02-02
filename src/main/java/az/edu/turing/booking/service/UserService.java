@@ -2,8 +2,9 @@ package az.edu.turing.booking.service;
 
 import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.model.dto.UserDto;
+import az.edu.turing.booking.model.dto.request.AdminCreateRequest;
 import az.edu.turing.booking.model.dto.request.UserCreateRequest;
-import az.edu.turing.booking.model.dto.request.UserRoleUpdateRequest;
+import az.edu.turing.booking.model.dto.request.UserStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.UsernameUpdateRequest;
 import org.springframework.data.domain.Page;
 
@@ -11,9 +12,11 @@ public interface UserService {
 
     UserDto create(UserCreateRequest request);
 
+    UserDto create(Long userId, String password, AdminCreateRequest request);
+
     UserDto updateUsername(Long id, UsernameUpdateRequest request);
 
-    UserDto updateRole(Long id, UserRoleUpdateRequest request);
+    UserDto updateStatus(Long id, UserStatusUpdateRequest request);
 
     UserDto getById(Long id);
 
@@ -28,4 +31,6 @@ public interface UserService {
     boolean existsById(Long id);
 
     void delete(Long id);
+
+    boolean checkPassword(Long id, String password);
 }

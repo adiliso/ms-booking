@@ -1,6 +1,7 @@
 package az.edu.turing.booking.domain.entity;
 
 import az.edu.turing.booking.model.enums.UserRole;
+import az.edu.turing.booking.model.enums.UserStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,10 +32,17 @@ public class UserEntity extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(length = 64)
+    private String password;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 
-    @ManyToMany(mappedBy = "passengers", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private Set<BookingEntity> bookings = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status;
 }
