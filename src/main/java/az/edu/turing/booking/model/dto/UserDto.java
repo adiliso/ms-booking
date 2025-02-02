@@ -1,6 +1,7 @@
 package az.edu.turing.booking.model.dto;
 
 import az.edu.turing.booking.model.enums.UserRole;
+import az.edu.turing.booking.model.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class UserDto {
     private Long id;
     private String username;
     private UserRole role;
+    private UserStatus status;
 }

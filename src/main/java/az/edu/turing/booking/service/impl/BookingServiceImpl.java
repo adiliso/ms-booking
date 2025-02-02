@@ -52,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setTotalPrice(flight.getPrice() * request.getNumberOfPassengers());
 
         request.getUsernameOfPassengers()
-                .forEach(p -> booking.addPassenger(userService.findByUsername(p)));
+                .forEach(p -> booking.addUser(userService.findByUsername(p)));
 
         flightService.releaseSeats(flight.getFlightId(), request.getNumberOfPassengers());
 
@@ -106,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
         BookingEntity booking = findById(id);
         booking.setStatus(BookingStatus.CANCELLED);
 
-        flightService.addSeats(booking.getFlight().getId(), booking.getPassengers().size());
+        flightService.addSeats(booking.getFlight().getId(), booking.getUsers().size());
 
         bookingRepository.save(booking);
     }

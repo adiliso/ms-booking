@@ -1,6 +1,6 @@
 package az.edu.turing.booking.common;
 
-import az.edu.turing.booking.domain.entity.FlightDetailsEntity;
+import az.edu.turing.booking.domain.entity.FlightDetailEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
@@ -26,7 +26,7 @@ public final class TestConstants {
     public static final City ORIGIN_POINT = City.BAKU;
     public static final Airline AIRLINE = Airline.AZAL;
     public static final City DESTINATION_POINT = City.NEW_YORK;
-    public static final AircraftType AIRCRAFT = AircraftType.BOEING;
+    public static final AircraftType AIRCRAFT = AircraftType.BOEING_747;
     public static final LocalDateTime ARRIVAL_TIME = LocalDateTime.now().plusDays(2);
     public static final LocalDateTime DEPARTURE_TIME = LocalDateTime.now().plusDays(1);
 
@@ -120,7 +120,7 @@ public final class TestConstants {
                 .price(PRICE)
                 .build();
 
-        FlightDetailsEntity details = FlightDetailsEntity.builder()
+        FlightDetailEntity details = FlightDetailEntity.builder()
                 .flight(flight)
                 .airline(AIRLINE)
                 .aircraft(AIRCRAFT)
@@ -128,12 +128,12 @@ public final class TestConstants {
                 .totalSeats(TOTAL_SEATS)
                 .build();
 
-        flight.setFlightDetails(details);
+        flight.setFlightDetail(details);
         return flight;
     }
 
-    public static FlightDetailsEntity getFlightDetailsEntity() {
-        return FlightDetailsEntity.builder()
+    public static FlightDetailEntity getFlightDetailsEntity() {
+        return FlightDetailEntity.builder()
                 .flight(getFlightEntity())
                 .airline(AIRLINE)
                 .aircraft(AIRCRAFT)

@@ -68,7 +68,7 @@ class BookingServiceTest {
         BookingEntity booking = new BookingEntity();
         booking.setId(1L);
         booking.setFlight(flight);
-        booking.setPassengers(new HashSet<>());
+        booking.setUsers(new HashSet<>());
 
         given(bookingRepository.findById(anyLong())).willReturn(Optional.of(booking));
 
