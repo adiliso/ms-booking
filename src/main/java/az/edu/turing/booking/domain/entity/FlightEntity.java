@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "flights")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "flightDetails")
 public class FlightEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
@@ -45,7 +46,18 @@ public class FlightEntity extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Double price;
 
-    @OneToOne(mappedBy = "flight", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "flight", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private FlightDetailsEntity flightDetails;
+
+    public void setFlightDetails(FlightDetailsEntity flightDetails) {
+        if (flightDetails == null) {
+            if (this.flightDetails != null) {
+                this.flightDetails.setFlight(null);
+            }
+        } else {
+            flightDetails.setFlight(this);
+        }
+        this.flightDetails = flightDetails;
+    }
 }

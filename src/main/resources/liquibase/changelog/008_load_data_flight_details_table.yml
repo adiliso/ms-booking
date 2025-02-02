@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008_load_data_flight_details_table
+      author: Adil Ismayilov
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO flight_details (flight_id, total_seats, free_seats, airline, aircraft_type) VALUES
+              (1, 180, 180, 'TURKISH_AIRLINES', 'BOEING_737'),
+              (2, 250, 250, 'BRITISH_AIRWAYS', 'BOEING_777'),
+              (3, 280, 280, 'AIR_FRANCE', 'AIRBUS_A350'),
+              (4, 220, 220, 'LUFTHANSA', 'BOEING_787'),
+              (5, 320, 320, 'QANTAS', 'AIRBUS_A380'),
+              (6, 260, 260, 'AEROFLOT', 'BOEING_767'),
+              (7, 270, 270, 'IBERIA', 'AIRBUS_A330'),
+              (8, 300, 300, 'EMIRATES', 'BOEING_777'),
+              (9, 240, 240, 'KLM', 'BOEING_737'),
+              (10, 275, 275, 'SINGAPORE_AIRLINES', 'AIRBUS_A350'),
+              (11, 290, 290, 'CATHAY_PACIFIC', 'BOEING_747'),
+              (12, 330, 330, 'QANTAS', 'BOEING_787'),
+              (13, 310, 310, 'KOREAN_AIR', 'BOEING_777'),
+              (14, 200, 200, 'TURKISH_AIRLINES', 'BOEING_737'),
+              (15, 210, 210, 'AIR_INDIA', 'AIRBUS_A320'),
+              (16, 290, 290, 'UNITED_AIRLINES', 'BOEING_777'),
+              (17, 285, 285, 'CHINA_EASTERN', 'BOEING_747'),
+              (18, 260, 260, 'THAI_AIRWAYS', 'AIRBUS_A350'),
+              (19, 190, 190, 'NORWEGIAN_AIR', 'BOEING_737'),
+              (20, 180, 180, 'BRUSSELS_AIRLINES', 'AIRBUS_A320'),
+              (21, 255, 255, 'SOUTH_AFRICAN_AIRWAYS', 'BOEING_777'),
+              (22, 265, 265, 'TAP_AIR_PORTUGAL', 'AIRBUS_A321'),
+              (23, 175, 175, 'FINNAIR', 'AIRBUS_A320'),
+              (24, 300, 300, 'PHILIPPINE_AIRLINES', 'BOEING_777'),
+              (25, 185, 185, 'AEGEAN_AIRLINES', 'AIRBUS_A320'),
+              (26, 195, 195, 'SAS', 'BOEING_737'),
+              (27, 225, 225, 'SWISS_AIR', 'AIRBUS_A330'),
+              (28, 170, 170, 'CZECH_AIRLINES', 'AIRBUS_A319'),
+              (29, 210, 210, 'AEROMEXICO', 'BOEING_787'),
+              (30, 315, 315, 'QANTAS', 'AIRBUS_A380');

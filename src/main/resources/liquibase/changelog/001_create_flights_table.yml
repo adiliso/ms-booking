@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 001
+      id: 001_create_flights_table
       author: Aytan Babakishiyeva
       changes:
         - createTable:
@@ -27,11 +27,13 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
+                  defaultValueComputed: "NOW()"
               - column:
                   name: updated_at
                   type: timestamp
                   constraints:
                     nullable: true
+                  defaultValueComputed: "NOW()"
               - column:
                   name: origin_point
                   type: varchar(255)

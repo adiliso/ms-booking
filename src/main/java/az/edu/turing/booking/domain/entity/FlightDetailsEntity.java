@@ -26,7 +26,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "flight_details")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "flight")
 public class FlightDetailsEntity extends BaseEntity {
 
     @Id
@@ -45,7 +45,7 @@ public class FlightDetailsEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "aircraft_type", nullable = false)
-    private AircraftType aircraftType;
+    private AircraftType aircraft;
 
     @MapsId
     @OneToOne

@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "bookings")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "passengers")
 public class BookingEntity extends BaseEntity {
 
 
@@ -44,6 +45,7 @@ public class BookingEntity extends BaseEntity {
     @JoinTable(name = "bookings_passengers",
             joinColumns = @JoinColumn(name = "booking_id"),
             inverseJoinColumns = @JoinColumn(name = "passenger_id"))
+    @Builder.Default
     private Set<UserEntity> passengers = new HashSet<>();
 
     @Column(name = "total_price", nullable = false)
@@ -51,7 +53,7 @@ public class BookingEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BookingStatus status;
+        private BookingStatus status;
 
     public void addPassenger(UserEntity passenger) {
         passengers.add(passenger);
