@@ -49,6 +49,8 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingEntity booking = bookingMapper.toEntity(userId, request);
+        booking.setTotalPrice(flight.getPrice() * request.getNumberOfPassengers());
+
         request.getUsernameOfPassengers()
                 .forEach(p -> booking.addPassenger(userService.findByUsername(p)));
 

@@ -14,8 +14,10 @@ public interface BookingMapper {
 
     BookingMapper INSTANCE = Mappers.getMapper(BookingMapper.class);
 
+    @Mapping(target = "flightId", source = "flight.id")
     BookingDto toDto(BookingEntity entity);
 
+    @Mapping(target = "flight.id", source = "request.flightId")
     @Mapping(target = "status", constant = "CONFIRMED")
     BookingEntity toEntity(Long createdBy, BookingCreateRequest request);
 

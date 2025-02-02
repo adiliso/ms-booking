@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "flights")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "flightDetails")
 public class FlightEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
