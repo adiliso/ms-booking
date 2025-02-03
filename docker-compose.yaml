@@ -1,36 +1,20 @@
-version: "3.9"
-
 services:
-  postgres:
-    image: 'postgres:latest'
-    container_name: ms-booking.db
-    environment:
-      - 'POSTGRES_DB=postgres'
-      - 'POSTGRES_PASSWORD=postgres'
-      - 'POSTGRES_USER=postgres'
+  db_booking:
+    container_name: ms_booking_db
+    image: postgres
     ports:
-      - '5433:5432'
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - booking
-  app:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: booking
+      POSTGRES_USER: booking
+      POSTGRES_PASSWORD: booking123
+
+  ms-booking:
+    container_name: ms_booking_app
+    ports:
+      - "8080:8080"
+#    restart: unless-stopped
     build:
-      context: .
-    container_name: ms_booking.app
+      dockerfile: Dockerfile
     depends_on:
-      - postgres
-    ports:
-      - "8081:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-    networks:
-      - booking
-
-#volumes:
-#  postgres_data:
-
-networks:
-  booking:
+      - db_booking
