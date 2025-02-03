@@ -1,6 +1,7 @@
 package az.edu.turing.booking.domain.repository;
 
 import az.edu.turing.booking.domain.entity.FlightEntity;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,6 @@ import java.time.LocalDateTime;
 @Repository
 public interface FlightRepository extends JpaRepository<FlightEntity, Long>, JpaSpecificationExecutor<FlightEntity> {
 
-    Page<FlightEntity> findByDepartureTimeBetween(LocalDateTime now, LocalDateTime next24Hours, Pageable pageable);
+    Page<FlightEntity> findByDepartureTimeBetweenAndStatusIs(LocalDateTime now, LocalDateTime next24Hours,
+                                                             Pageable pageable, FlightStatus status);
 }
