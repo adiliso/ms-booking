@@ -1,6 +1,7 @@
 package az.edu.turing.booking.domain.entity;
 
 import az.edu.turing.booking.model.enums.City;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,6 +46,10 @@ public class FlightEntity extends BaseEntity {
 
     @Column(name = "price", nullable = false)
     private Double price;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FlightStatus status;
 
     @OneToOne(mappedBy = "flight", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
