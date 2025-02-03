@@ -1,3 +1,3 @@
-FROM openjdk:11.0.7-jre-slim
-COPY build/libs/ms-booking-0.0.1-SNAPSHOT.jar app.jar
+FROM eclipse-temurin:21-jre-alpine
+COPY build/libs/ms-booking-0.0.1-SNAPSHOT.jar ms-booking-0.0.1-SNAPSHOT.jar
 ENTRYPOINT ["java", "-jar", "/ms-booking-0.0.1-SNAPSHOT.jar"]

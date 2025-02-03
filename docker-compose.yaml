@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db_booking:
     container_name: ms_booking_db
@@ -11,15 +9,12 @@ services:
       POSTGRES_USER: booking
       POSTGRES_PASSWORD: booking123
 
-  ms-identity:
+  ms-booking:
     container_name: ms_booking_app
-    image: ms-booking-app:1.0
     ports:
-      - "8081:8081"
-    restart: unless-stopped
+      - "8080:8080"
+#    restart: unless-stopped
     build:
-      context: ms-booking
       dockerfile: Dockerfile
     depends_on:
       - db_booking
-    network_mode: "host"

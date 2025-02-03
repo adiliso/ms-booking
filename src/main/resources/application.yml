@@ -1,15 +1,16 @@
 spring:
   application:
     name: ms-booking
-
   jpa:
+    show_sql: true
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
-
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
-
+  datasource:
+    url: jdbc:postgresql://db_booking:5432/booking
+    username: booking
+    password: booking123
