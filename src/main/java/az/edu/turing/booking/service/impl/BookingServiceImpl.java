@@ -2,9 +2,7 @@ package az.edu.turing.booking.service.impl;
 
 import az.edu.turing.booking.domain.entity.BookingEntity;
 import az.edu.turing.booking.domain.repository.BookingRepository;
-import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.InvalidOperationException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.BookingMapper;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
@@ -21,6 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
+import static az.edu.turing.booking.model.enums.ErrorEnum.BOOKING_NOT_FOUND;
+import static az.edu.turing.booking.model.enums.ErrorEnum.INVALID_OPERATION;
+import static az.edu.turing.booking.model.enums.ErrorEnum.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -40,11 +43,11 @@ public class BookingServiceImpl implements BookingService {
         FlightDetailsResponse flight = flightService.getInfoById(request.getFlightId());
 
         if (flight.getDepartureTime().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new InvalidOperationException("Too late booking for flight");
+            throw new BaseException(INVALID_OPERATION, "Too late for booking");
         }
 
         if (flight.getFreeSeats() < request.getNumberOfPassengers()) {
-            throw new InvalidOperationException(String.format("There are only %d free seats in this flight",
+            throw new BaseException(INVALID_OPERATION, String.format("There are only %d free seats in this flight",
                     flight.getFreeSeats()));
         }
 
@@ -88,9 +91,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto updateStatus(Long userId, Long id, BookingStatus status) {
-
         if (!userService.isAdmin(id)) {
-            throw new AccessDeniedException(("User is not admin"));
+            throw new BaseException(ACCESS_DENIED);
         }
 
         BookingEntity booking = findById(id);
@@ -113,12 +115,12 @@ public class BookingServiceImpl implements BookingService {
 
     private void userExistsById(Long userId) {
         if (!userService.existsById(userId)) {
-            throw new NotFoundException("User not found with id " + userId);
+            throw new BaseException(USER_NOT_FOUND);
         }
     }
 
     private BookingEntity findById(Long id) {
         return bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking not found with id: " + id));
+                .orElseThrow(() -> new BaseException(BOOKING_NOT_FOUND));
     }
 }

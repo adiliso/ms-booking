@@ -2,11 +2,7 @@ package az.edu.turing.booking.service.impl;
 
 import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.UserRepository;
-import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.AlreadyExistsException;
-import az.edu.turing.booking.exception.InvalidInputException;
-import az.edu.turing.booking.exception.InvalidOperationException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.UserMapper;
 import az.edu.turing.booking.model.dto.UserDto;
 import az.edu.turing.booking.model.dto.request.AdminCreateRequest;
@@ -23,6 +19,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
+import static az.edu.turing.booking.model.enums.ErrorEnum.INVALID_OPERATION;
+import static az.edu.turing.booking.model.enums.ErrorEnum.PASSWORDS_DONT_MATCH;
+import static az.edu.turing.booking.model.enums.ErrorEnum.USERNAME_NOT_FOUND;
+import static az.edu.turing.booking.model.enums.ErrorEnum.USER_ALREADY_EXISTS;
+import static az.edu.turing.booking.model.enums.ErrorEnum.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -45,15 +48,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(Long id, AdminCreateRequest request) {
         if (!isAdmin(id)) {
-            throw new AccessDeniedException("User is not an admin");
+            throw new BaseException(ACCESS_DENIED);
         }
         if (!checkPassword(id, request.getAdminPassword())) {
-            throw new AccessDeniedException("Password is incorrect");
+            throw new BaseException(ACCESS_DENIED);
         }
 
         checkUsernameAlreadyExists(request.getUsername());
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new InvalidInputException("Passwords don't match");
+            throw new BaseException(PASSWORDS_DONT_MATCH);
         }
         UserEntity userEntity = userMapper.toEntity(request);
         userEntity.setPassword(UserUtils.hashPassword(request.getPassword()));
@@ -71,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUsername(Long id, UsernameUpdateRequest request) {
         if(isAdmin(id)) {
-            throw new InvalidOperationException("Can't change username");
+            throw new BaseException(INVALID_OPERATION);
         }
         UserEntity userEntity = findById(id);
         userEntity.setUsername(request.getUsername());
@@ -107,7 +110,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new BaseException(USERNAME_NOT_FOUND));
     }
 
     @Transactional
@@ -122,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public boolean isAdmin(Long id) {
         UserEntity user = findById(id);
         if (!user.getStatus().equals(UserStatus.ACTIVE)) {
-            throw new NotFoundException("User not found with id: " + id);
+            throw new BaseException(USER_NOT_FOUND);
         }
         return user.getRole().equals(UserRole.ADMIN);
     }
@@ -134,12 +137,12 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity findById(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("User not found with id: " + id));
+                new BaseException(USER_NOT_FOUND));
     }
 
     private void checkUsernameAlreadyExists(String username) {
         if (userRepository.existsByUsername(username)) {
-            throw new AlreadyExistsException("User already exists with username: " + username);
+            throw new BaseException(USER_ALREADY_EXISTS);
         }
     }
 }

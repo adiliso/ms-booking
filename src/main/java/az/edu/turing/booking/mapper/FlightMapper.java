@@ -27,6 +27,7 @@ public interface FlightMapper {
     @Mapping(target = "freeSeats", source = "flightDetail.freeSeats")
     FlightResponse toResponse(FlightEntity flightEntity);
 
+    @Mapping(target = "status", constant = "SCHEDULED")
     FlightEntity toEntity(Long createdBy, FlightCreateRequest request);
 
     FlightDetailEntity toDetailsEntity(FlightCreateRequest request);

@@ -11,7 +11,8 @@ import java.time.LocalTime;
 public class FlightSpecificationUtils {
 
     public static Specification<FlightEntity> getSpecification(FlightFilter filter) {
-        Specification<FlightEntity> spec = Specification.where(null);
+        Specification<FlightEntity> spec = Specification.where(FlightSpecification.isScheduled());
+
         if (filter.getOriginPoints() != null && !filter.getOriginPoints().isEmpty()) {
             spec = spec.and(FlightSpecification.hasOriginPoints(filter.getOriginPoints()));
         }

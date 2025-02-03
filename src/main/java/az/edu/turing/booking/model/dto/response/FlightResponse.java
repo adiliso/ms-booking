@@ -1,6 +1,7 @@
 package az.edu.turing.booking.model.dto.response;
 
 import az.edu.turing.booking.model.enums.City;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +22,5 @@ public class FlightResponse {
     private City destinationPoint;
     private Integer freeSeats;
     private Double price;
+    private FlightStatus status;
 }

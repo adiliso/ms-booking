@@ -9,7 +9,7 @@ databaseChangeLog:
               ALTER TABLE flight DISABLE TRIGGER ALL;
         - sql:
             sql: |
-              DELETE FROM flight;
+              DELETE FROM flight WHERE ID BETWEEN 1 AND 30;
         - sql:
             sql: |
               ALTER TABLE flight ENABLE TRIGGER ALL;
@@ -45,8 +45,7 @@ databaseChangeLog:
                (27, 1, 'ZURICH', 'MOSCOW', NOW() + INTERVAL '2 hours', NOW() + INTERVAL '6 hours', 340.0, 'SCHEDULED'),
                (28, 1, 'PRAGUE', 'VIENNA', NOW() + INTERVAL '1 hour', NOW() + INTERVAL '2 hours', 220.0, 'SCHEDULED'),
                (29, 1, 'MEXICO_CITY', 'LOS_ANGELES', NOW() + INTERVAL '2 hours', NOW() + INTERVAL '5 hours', 310.0, 'SCHEDULED'),
-               (30, 1, 'ISTANBUL', 'SYDNEY', NOW() + INTERVAL '5 hours', NOW() + INTERVAL '19 hours', 580.0, 'CANCELLED') 
-              ON CONFLICT (id) DO NOTHING;
+               (30, 1, 'ISTANBUL', 'SYDNEY', NOW() + INTERVAL '5 hours', NOW() + INTERVAL '19 hours', 580.0, 'CANCELLED');
 
         - sql:
             sql: |
