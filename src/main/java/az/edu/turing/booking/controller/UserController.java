@@ -45,9 +45,8 @@ public class UserController {
 
     @PostMapping("/admin")
     public ResponseEntity<UserDto> createAdmin(@RequestHeader("User-Id") Long userId,
-                                               @RequestParam String password,
                                                @Valid @RequestBody AdminCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(userId, password, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(userId, request));
     }
 
     @PatchMapping("/{id}/username")
@@ -57,7 +56,7 @@ public class UserController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<UserDto> updateUserStatus
-            (@PathVariable Long id, @Valid @ParameterObject UserStatusUpdateRequest request) {
+            (@PathVariable Long id, @Valid @RequestBody UserStatusUpdateRequest request) {
         return ResponseEntity.ok(userService.updateStatus(id, request));
     }
 

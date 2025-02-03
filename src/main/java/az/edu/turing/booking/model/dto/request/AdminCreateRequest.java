@@ -1,6 +1,7 @@
 package az.edu.turing.booking.model.dto.request;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminCreateRequest {
+
+    @NotNull
+    private String adminPassword;
 
     @Email
     private String username;

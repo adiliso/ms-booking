@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDto create(UserCreateRequest request);
 
-    UserDto create(Long userId, String password, AdminCreateRequest request);
+    UserDto create(Long userId, AdminCreateRequest request);
 
     UserDto updateUsername(Long id, UsernameUpdateRequest request);
 

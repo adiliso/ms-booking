@@ -43,11 +43,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto create(Long id, String password, AdminCreateRequest request) {
+    public UserDto create(Long id, AdminCreateRequest request) {
         if (!isAdmin(id)) {
             throw new AccessDeniedException("User is not an admin");
         }
-        if (!checkPassword(id, password)) {
+        if (!checkPassword(id, request.getAdminPassword())) {
             throw new AccessDeniedException("Password is incorrect");
         }
 
