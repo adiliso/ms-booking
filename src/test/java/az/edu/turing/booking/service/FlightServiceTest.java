@@ -79,13 +79,15 @@ class FlightServiceTest {
     @Test
     void getAllInNext24Hours_Should_Return_Success() {
         Pageable pageable = Pageable.ofSize(20);
-        given(flightRepository.findByDepartureTimeBetween(any(), any(), any()))
+        given(flightRepository.findByDepartureTimeBetweenAndStatusIs(any(), any(),
+                any(), any()))
                 .willReturn(getFlightEntityWithPage(pageable));
 
         Page<FlightResponse> result = flightService.getAllInNext24Hours(PAGE_NUMBER, PAGE_SIZE);
 
         Assertions.assertNotNull(result);
-        then(flightRepository).should(times(1)).findByDepartureTimeBetween(any(), any(), any());
+        then(flightRepository).should(times(1))
+                .findByDepartureTimeBetweenAndStatusIs(any(), any(), any(), any());
     }
 
     @Test
@@ -208,6 +210,4 @@ class FlightServiceTest {
 
         then(flightRepository).should(times(1)).findAll(any(Specification.class), eq(pageable));
     }
-
-
 }

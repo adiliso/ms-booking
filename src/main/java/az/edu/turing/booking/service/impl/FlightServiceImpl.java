@@ -10,9 +10,11 @@ import az.edu.turing.booking.exception.NotFoundException;
 import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
+import az.edu.turing.booking.model.dto.request.FlightStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import az.edu.turing.booking.service.FlightService;
 import az.edu.turing.booking.service.UserService;
 import az.edu.turing.booking.util.FlightSpecificationUtils;
@@ -84,7 +86,6 @@ public class FlightServiceImpl implements FlightService {
     @Transactional
     @Override
     public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest request) {
-
         if (!userService.isAdmin(userId)) {
             throw new AccessDeniedException("You cannot update a flight without an admin role");
         }
@@ -100,12 +101,28 @@ public class FlightServiceImpl implements FlightService {
         return flightMapper.toResponse(updatedFlight);
     }
 
+    @Transactional
+    @Override
+    public FlightResponse updateStatus(Long userId, Long flightId, FlightStatusUpdateRequest request) {
+        if (!userService.isAdmin(userId)) {
+            throw new AccessDeniedException("You cannot update flight status without an admin role");
+        }
+
+        FlightEntity flight = findById(flightId);
+        flight.setStatus(request.getStatus());
+
+        log.info("Flight status with id {} updated successfully.", flight.getId());
+        return flightMapper.toResponse(flight);
+    }
+
     @Override
     public Page<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber, pageSize);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next24Hours = now.plusHours(24);
-        Page<FlightEntity> flights = flightRepository.findByDepartureTimeBetween(now, next24Hours, pageable);
+
+        Page<FlightEntity> flights = flightRepository.findByDepartureTimeBetweenAndStatusIs(now, next24Hours, pageable,
+                FlightStatus.SCHEDULED);
 
         log.info("Finding flights in next 24 hours...");
         return flights.map(flightMapper::toResponse);
