@@ -1,79 +1,62 @@
 package az.edu.turing.booking.exception;
 
-import az.edu.turing.booking.model.constant.ErrorCode;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<GlobalErrorResponse> handleNotFoundException(NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).
-                body(GlobalErrorResponse.builder()
-                        .errorCode(ErrorCode.NOT_FOUND)
-                        .errorMessage(e.getMessage())
-                        .timestamp(LocalDateTime.now())
-                        .requestId(UUID.randomUUID())
-                        .build());
-    }
-
-    @ExceptionHandler(AlreadyExistsException.class)
-    public ResponseEntity<GlobalErrorResponse> handleAlreadyExistsException(AlreadyExistsException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).
-                body(GlobalErrorResponse.builder()
-                        .errorCode(ErrorCode.ALREADY_EXISTS)
-                        .errorMessage(e.getMessage())
-                        .timestamp(LocalDateTime.now())
-                        .requestId(UUID.randomUUID())
-                        .build());
-    }
-
-    @ExceptionHandler(InvalidOperationException.class)
-    public ResponseEntity<GlobalErrorResponse> handleInvalidOperationException(InvalidOperationException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).
-                body(GlobalErrorResponse.builder()
-                        .errorCode(ErrorCode.INVALID_OPERATION)
-                        .errorMessage(e.getMessage())
-                        .timestamp(LocalDateTime.now())
-                        .requestId(UUID.randomUUID())
-                        .build());
-    }
-
-    @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<GlobalErrorResponse> handleInvalidInputException(InvalidInputException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).
-                body(GlobalErrorResponse.builder()
-                        .errorCode(ErrorCode.INVALID_INPUT)
-                        .errorMessage(e.getMessage())
-                        .timestamp(LocalDateTime.now())
-                        .requestId(UUID.randomUUID())
-                        .build());
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<GlobalErrorResponse> handleAccessDeniedExceptionException(AccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).
-                body(GlobalErrorResponse.builder()
-                        .errorCode(ErrorCode.ACCESS_DENIED)
-                        .errorMessage(e.getMessage())
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<GlobalErrorResponse> handleBaseException(BaseException ex) {
+        return ResponseEntity.status(Optional
+                        .ofNullable(HttpStatus.resolve(ex.getCode()))
+                        .orElse(HttpStatus.INTERNAL_SERVER_ERROR))
+                .body(GlobalErrorResponse.builder()
+                        .errorCode(ex.getCode())
+                        .errorMessage(ex.getMessage())
                         .timestamp(LocalDateTime.now())
                         .requestId(UUID.randomUUID())
                         .build());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<GlobalErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<GlobalErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(GlobalErrorResponse.builder()
-                        .errorCode(ErrorCode.CONSTRAINT_VIOLATION)
-                        .errorMessage(e.getMessage())
+                        .errorCode(400)
+                        .errorMessage(ex.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .requestId(UUID.randomUUID())
+                        .build());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<GlobalErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalErrorResponse.builder()
+                        .errorCode(400)
+                        .errorMessage(ex.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .requestId(UUID.randomUUID())
+                        .build());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<GlobalErrorResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalErrorResponse.builder()
+                        .errorCode(400)
+                        .errorMessage(ex.getMessage())
                         .timestamp(LocalDateTime.now())
                         .requestId(UUID.randomUUID())
                         .build());

@@ -1,6 +1,6 @@
 package az.edu.turing.booking.controller;
 
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.service.impl.BookingServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.List;
 
+import static az.edu.turing.booking.model.enums.ErrorEnum.BOOKING_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -61,7 +62,7 @@ class BookingControllerTest {
 
     @Test
     void getBookingById_ShouldReturnNotFound_WhenBookingDoesNotExist() throws Exception {
-        given(bookingService.getBookingById(anyLong())).willThrow(new NotFoundException("Booking not found"));
+        given(bookingService.getBookingById(anyLong())).willThrow(new BaseException(BOOKING_NOT_FOUND));
 
         mockMvc.perform(get("/api/v1/bookings/{id}", 1L))
                 .andExpect(status().isNotFound())
@@ -77,5 +78,4 @@ class BookingControllerTest {
                 .andDo(MockMvcResultHandlers.print());
         then(bookingService).should(times(1)).cancel(1L);
     }
-
 }

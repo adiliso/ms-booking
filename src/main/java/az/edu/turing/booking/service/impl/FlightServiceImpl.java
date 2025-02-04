@@ -4,9 +4,7 @@ import az.edu.turing.booking.domain.entity.FlightDetailEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
-import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.InvalidOperationException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
@@ -28,6 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
+import static az.edu.turing.booking.model.enums.ErrorEnum.FLIGHT_DETAILS_NOT_FOUND;
+import static az.edu.turing.booking.model.enums.ErrorEnum.FLIGHT_NOT_FOUND;
+import static az.edu.turing.booking.model.enums.ErrorEnum.INVALID_OPERATION;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -45,7 +48,7 @@ public class FlightServiceImpl implements FlightService {
         FlightDetailEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() + seats;
         if (entity.getTotalSeats() < finalFreeSeats) {
-            throw new InvalidOperationException("Cannot add seats!");
+            throw new BaseException(INVALID_OPERATION, "Cannot add seats!");
         }
         entity.setFreeSeats(finalFreeSeats);
 
@@ -58,7 +61,7 @@ public class FlightServiceImpl implements FlightService {
         FlightDetailEntity entity = getFlightDetails(flightId);
         int finalFreeSeats = entity.getFreeSeats() - seats;
         if (finalFreeSeats < 0) {
-            throw new InvalidOperationException("Cannot release seats!");
+            throw new BaseException(INVALID_OPERATION, "Cannot release seats!");
         }
         entity.setFreeSeats(finalFreeSeats);
 
@@ -69,7 +72,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightResponse create(Long userId, FlightCreateRequest flightCreateRequest) {
         if (!userService.isAdmin(userId)) {
-            throw new AccessDeniedException("You cannot create a flight without an admin role");
+            throw new BaseException(ACCESS_DENIED);
         }
 
         FlightEntity flight = flightMapper.toEntity(userId, flightCreateRequest);
@@ -87,7 +90,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightResponse update(Long userId, Long flightId, FlightUpdateRequest request) {
         if (!userService.isAdmin(userId)) {
-            throw new AccessDeniedException("You cannot update a flight without an admin role");
+            throw new BaseException(ACCESS_DENIED);
         }
 
         FlightEntity flight = findById(flightId);
@@ -105,7 +108,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightResponse updateStatus(Long userId, Long flightId, FlightStatusUpdateRequest request) {
         if (!userService.isAdmin(userId)) {
-            throw new AccessDeniedException("You cannot update flight status without an admin role");
+            throw new BaseException(ACCESS_DENIED);
         }
 
         FlightEntity flight = findById(flightId);
@@ -131,7 +134,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightDetailsResponse getInfoById(Long id) {
         return flightMapper.toDetailedResponse(flightRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id)));
+                .orElseThrow(() -> new BaseException(FLIGHT_NOT_FOUND)));
     }
 
     @Override
@@ -144,11 +147,11 @@ public class FlightServiceImpl implements FlightService {
     private FlightDetailEntity getFlightDetails(Long flightId) {
         return flightDetailsRepository.findById(flightId)
                 .orElseThrow(() ->
-                        new NotFoundException("Flight details not found with id: " + flightId));
+                        new BaseException(FLIGHT_DETAILS_NOT_FOUND));
     }
 
     private FlightEntity findById(Long id) {
         return flightRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + id));
+                .orElseThrow(() -> new BaseException(FLIGHT_NOT_FOUND));
     }
 }

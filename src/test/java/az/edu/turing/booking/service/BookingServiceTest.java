@@ -4,8 +4,7 @@ import az.edu.turing.booking.domain.entity.BookingEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.BookingRepository;
-import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.BookingMapper;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.enums.BookingStatus;
@@ -105,7 +104,7 @@ class BookingServiceTest {
     void getBookingById_ShouldThrowNotFound_WhenBookingDoesNotExist() {
         given(bookingRepository.findById(1L)).willReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> bookingService.getBookingById(1L));
+        assertThrows(BaseException.class, () -> bookingService.getBookingById(1L));
 
         then(bookingRepository).should(times(1)).findById(1L);
     }
@@ -137,15 +136,13 @@ class BookingServiceTest {
     void cancel_ShouldThrowNotFoundException_WhenBookingNotExists() {
         given(bookingRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> bookingService.cancel(1L));
+        assertThrows(BaseException.class, () -> bookingService.cancel(1L));
     }
-
 
     @Test
     void updateStatus_ShouldThrowAccessDeniedException_WhenUserNotAdmin() {
         given(userService.isAdmin(anyLong())).willReturn(false);
 
-        assertThrows(AccessDeniedException.class, () -> bookingService.updateStatus(1L, 1L, BookingStatus.CANCELLED));
+        assertThrows(BaseException.class, () -> bookingService.updateStatus(1L, 1L, BookingStatus.CANCELLED));
     }
-
 }
