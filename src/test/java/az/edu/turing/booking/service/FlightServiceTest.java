@@ -6,8 +6,7 @@ import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
 import az.edu.turing.booking.domain.repository.FlightSpecification;
 import az.edu.turing.booking.domain.repository.UserRepository;
-import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
@@ -109,10 +108,10 @@ class FlightServiceTest {
 
     @Test
     void create_Should_Throw_AccessDeniedException_WhenUserIsNotAdmin() {
-        AccessDeniedException ex = Assertions.assertThrows(AccessDeniedException.class,
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.create(USER_ID, getFlightCreateRequest()));
 
-        Assertions.assertEquals("You cannot create a flight without an admin role", ex.getMessage());
+        Assertions.assertEquals("Access Denied", ex.getMessage());
         then(flightRepository).should(never()).save(any());
     }
 
@@ -151,18 +150,18 @@ class FlightServiceTest {
         given(userService.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.empty());
 
-        NotFoundException ex = Assertions.assertThrows(NotFoundException.class,
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()));
 
-        Assertions.assertEquals("Flight not found with id: " + FLIGHT_ID, ex.getMessage());
+        Assertions.assertEquals("Flight not found", ex.getMessage());
     }
 
     @Test
     void update_Should_Throw_AccessDeniedException_WhenUserIsNotAdmin() {
-        AccessDeniedException ex = Assertions.assertThrows(AccessDeniedException.class,
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()));
 
-        Assertions.assertEquals("You cannot update a flight without an admin role", ex.getMessage());
+        Assertions.assertEquals("Access Denied", ex.getMessage());
     }
 
     @Test
@@ -178,10 +177,10 @@ class FlightServiceTest {
 
     @Test
     void getInfoById_Should_Throw_NotFoundException_WhenIdNotFound() {
-        NotFoundException ex = Assertions.assertThrows(NotFoundException.class,
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.getInfoById(FLIGHT_ID));
 
-        Assertions.assertEquals("Flight not found with id: " + FLIGHT_ID, ex.getMessage());
+        Assertions.assertEquals("Flight not found", ex.getMessage());
 
         then(flightRepository).should(times(1)).findById(FLIGHT_ID);
     }

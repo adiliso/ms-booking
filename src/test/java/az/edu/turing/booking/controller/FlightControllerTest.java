@@ -1,14 +1,13 @@
 package az.edu.turing.booking.controller;
 
-import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
+import az.edu.turing.booking.model.enums.ErrorEnum;
 import az.edu.turing.booking.service.FlightService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -81,7 +80,8 @@ class FlightControllerTest {
 
     @Test
     void getInfoById_Should_Throw_NotFoundException_When_IdNotFound() throws Exception {
-        given(flightService.getInfoById(FLIGHT_ID)).willThrow(NotFoundException.class);
+        given(flightService.getInfoById(FLIGHT_ID))
+                .willThrow(new BaseException(ErrorEnum.FLIGHT_DETAILS_NOT_FOUND));
 
         mockMvc.perform(get("/api/v1/flights/{flightId}", FLIGHT_ID))
                 .andExpect(status().isNotFound());
@@ -122,7 +122,7 @@ class FlightControllerTest {
     @Test
     void create_Should_Throw_NotFoundException_When_UserIsNotAdmin() throws Exception {
         given(flightService.create(USER_ID, getFlightCreateRequest()))
-                .willThrow(AccessDeniedException.class);
+                .willThrow(new BaseException(ErrorEnum.ACCESS_DENIED));
 
         mockMvc.perform(post("/api/v1/flights")
                         .header("User-Id", USER_ID)
@@ -152,7 +152,7 @@ class FlightControllerTest {
     @Test
     void update_Should_Throw_AccessDeniedException_When_UserIsNotAdmin() throws Exception {
         given(flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()))
-                .willThrow(AccessDeniedException.class);
+                .willThrow(new BaseException(ErrorEnum.ACCESS_DENIED));
 
         mockMvc.perform(put("/api/v1/flights/{flightId}", FLIGHT_ID)
                         .header("User-Id", USER_ID)

@@ -6,7 +6,7 @@ databaseChangeLog:
         - sql:
             sql: |
               INSERT INTO public.users (id, username, password, role, status) VALUES
-              (1, 'admin@gmail.com', '6l5UXdbzqrZQRUPU+kbIOVPm9hAQbjScXYB7/RV8VHA=', 'ADMIN', 'ACTIVE');
+              (1, 'admin@gmail.com', 'SkYN/j4LmLFiyNocVf0fusMHCl8OzYM3xzga9hxSQAE=', 'ADMIN', 'ACTIVE');
 
         - sql:
             sql: |

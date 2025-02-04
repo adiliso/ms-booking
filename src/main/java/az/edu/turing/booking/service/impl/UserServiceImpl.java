@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
-import static az.edu.turing.booking.model.enums.ErrorEnum.INVALID_OPERATION;
 import static az.edu.turing.booking.model.enums.ErrorEnum.PASSWORDS_DONT_MATCH;
 import static az.edu.turing.booking.model.enums.ErrorEnum.USERNAME_NOT_FOUND;
 import static az.edu.turing.booking.model.enums.ErrorEnum.USER_ALREADY_EXISTS;
@@ -47,14 +46,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto create(Long id, AdminCreateRequest request) {
-        if (!isAdmin(id)) {
-            throw new BaseException(ACCESS_DENIED);
-        }
-        if (!checkPassword(id, request.getAdminPassword())) {
-            throw new BaseException(ACCESS_DENIED);
-        }
-
+        isAdmin(id);
+        checkPassword(id, request.getAdminPassword());
         checkUsernameAlreadyExists(request.getUsername());
+
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new BaseException(PASSWORDS_DONT_MATCH);
         }
@@ -67,15 +62,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean checkPassword(Long id, String password) {
         String hashedPassword = UserUtils.hashPassword(password);
-        return userRepository.existsByIdAndPassword(id, hashedPassword);
+
+        if (!userRepository.existsByIdAndPassword(id, hashedPassword)) {
+            throw new BaseException(ACCESS_DENIED);
+        }
+
+        return true;
     }
 
     @Transactional
     @Override
     public UserDto updateUsername(Long id, UsernameUpdateRequest request) {
-        if(isAdmin(id)) {
-            throw new BaseException(INVALID_OPERATION);
-        }
+        isAdmin(id);
+
         UserEntity userEntity = findById(id);
         userEntity.setUsername(request.getUsername());
 
@@ -123,11 +122,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isAdmin(Long id) {
-        UserEntity user = findById(id);
-        if (!user.getStatus().equals(UserStatus.ACTIVE)) {
-            throw new BaseException(USER_NOT_FOUND);
+        UserEntity user = userRepository.findByIdAndStatusIs(id, UserStatus.ACTIVE)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+
+        if (!user.getRole().equals(UserRole.ADMIN)) {
+            throw new BaseException(ACCESS_DENIED);
         }
-        return user.getRole().equals(UserRole.ADMIN);
+
+        return true;
     }
 
     @Override
