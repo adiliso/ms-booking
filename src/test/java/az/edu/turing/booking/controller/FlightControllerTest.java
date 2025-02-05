@@ -1,6 +1,5 @@
 package az.edu.turing.booking.controller;
 
-import az.edu.turing.booking.common.TestUtils;
 import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.enums.ErrorEnum;
@@ -12,8 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.nio.file.Paths;
 
 import static az.edu.turing.booking.common.FlightTestConstant.FLIGHT_ID;
 import static az.edu.turing.booking.common.FlightTestConstant.PAGE_NUMBER;
@@ -27,6 +24,7 @@ import static az.edu.turing.booking.common.FlightTestConstant.getFlightUpdateReq
 import static az.edu.turing.booking.common.JsonFiles.FLIGHT_DETAIL_RESPONSE;
 import static az.edu.turing.booking.common.JsonFiles.FLIGHT_RESPONSE;
 import static az.edu.turing.booking.common.JsonFiles.PAGEABLE_FLIGHT_RESPONSE;
+import static az.edu.turing.booking.common.TestUtils.json;
 import static az.edu.turing.booking.model.enums.ErrorEnum.FLIGHT_DETAILS_NOT_FOUND;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -55,7 +53,7 @@ class FlightControllerTest {
     void getAllInNext24Hours_Should_Return_Success() throws Exception {
         given(flightService.getAllInNext24Hours(PAGE_NUMBER, PAGE_SIZE)).willReturn(getFlightResponseWithPage());
 
-        String expectedJson = TestUtils.json(Paths.get(PAGEABLE_FLIGHT_RESPONSE).toString());
+        String expectedJson = json(PAGEABLE_FLIGHT_RESPONSE);
 
         mockMvc.perform(get(BASE_URL).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -69,7 +67,7 @@ class FlightControllerTest {
     void getInfoById_Should_Return_Success() throws Exception {
         given(flightService.getInfoById(FLIGHT_ID)).willReturn(getFlightDetailsResponse());
 
-        String expectedJson = TestUtils.json(FLIGHT_DETAIL_RESPONSE);
+        String expectedJson = json(FLIGHT_DETAIL_RESPONSE);
 
         mockMvc.perform(get(BASE_URL + "/{flightId}", FLIGHT_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -94,7 +92,7 @@ class FlightControllerTest {
         given(flightService.search(filter, PAGE_NUMBER, PAGE_SIZE))
                 .willReturn(getFlightResponseWithPage());
 
-        String expectedJson = TestUtils.json(Paths.get(PAGEABLE_FLIGHT_RESPONSE).toString());
+        String expectedJson = json(PAGEABLE_FLIGHT_RESPONSE);
 
         mockMvc.perform(get(BASE_URL + "/search").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -108,7 +106,7 @@ class FlightControllerTest {
     void create_Should_Return_Success() throws Exception {
         given(flightService.create(USER_ID, getFlightCreateRequest())).willReturn(getFlightResponse());
 
-        String expectedJson = TestUtils.json(Paths.get(FLIGHT_RESPONSE).toString());
+        String expectedJson = json(FLIGHT_RESPONSE);
 
         mockMvc.perform(post(BASE_URL)
                         .header("User-Id", USER_ID)
@@ -138,7 +136,7 @@ class FlightControllerTest {
         given(flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()))
                 .willReturn(getFlightResponse());
 
-        String expectedJson = TestUtils.json(Paths.get(FLIGHT_RESPONSE).toString());
+        String expectedJson = json(FLIGHT_RESPONSE);
 
         mockMvc.perform(put(BASE_URL + "/{flightId}", FLIGHT_ID)
                         .header("User-Id", USER_ID)
