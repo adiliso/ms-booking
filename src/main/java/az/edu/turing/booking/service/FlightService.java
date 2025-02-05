@@ -6,7 +6,7 @@ import az.edu.turing.booking.model.dto.request.FlightStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
-import org.springframework.data.domain.Page;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 
 public interface FlightService {
 
@@ -20,9 +20,9 @@ public interface FlightService {
 
     FlightResponse updateStatus(Long userId, Long flightId, FlightStatusUpdateRequest flightStatusUpdateRequest);
 
-    Page<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize);
+    PageResponse<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize);
 
     FlightDetailsResponse getInfoById(Long id);
 
-    Page<FlightResponse> search(FlightFilter filter, final int pageNumber, final int pageSize);
+    PageResponse<FlightResponse> search(FlightFilter filter, final int pageNumber, final int pageSize);
 }

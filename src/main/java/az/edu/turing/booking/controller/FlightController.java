@@ -6,12 +6,12 @@ import az.edu.turing.booking.model.dto.request.FlightStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.service.FlightService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +38,7 @@ public class FlightController {
     private final FlightService flightService;
 
     @GetMapping
-    public ResponseEntity<Page<FlightResponse>> getAllInNext24Hours(
+    public ResponseEntity<PageResponse<FlightResponse>> getAllInNext24Hours(
             @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER, required = false) @Min(0) int pageNumber,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE, required = false) @Min(1) int pageSize) {
         return ResponseEntity.ok(flightService.getAllInNext24Hours(pageNumber, pageSize));
@@ -51,7 +51,7 @@ public class FlightController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<FlightResponse>> search(
+    public ResponseEntity<PageResponse<FlightResponse>> search(
             @ParameterObject FlightFilter filter,
             @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER, required = false) @Min(0) int pageNumber,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE, required = false) @Min(1) int pageSize) {

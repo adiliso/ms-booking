@@ -1,5 +1,6 @@
 package az.edu.turing.booking.exception;
 
+import az.edu.turing.booking.model.dto.response.GlobalErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

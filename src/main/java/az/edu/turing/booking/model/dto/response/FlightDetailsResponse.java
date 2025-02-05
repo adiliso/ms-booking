@@ -3,6 +3,7 @@ package az.edu.turing.booking.model.dto.response;
 import az.edu.turing.booking.model.enums.AircraftType;
 import az.edu.turing.booking.model.enums.Airline;
 import az.edu.turing.booking.model.enums.City;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class FlightDetailsResponse {
     private AircraftType aircraft;
     private Airline airline;
     private String duration;
+    private FlightStatus status;
 
     public String getDuration() {
         if (departureTime != null && arrivalTime != null) {

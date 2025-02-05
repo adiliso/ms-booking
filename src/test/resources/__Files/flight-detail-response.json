@@ -1,0 +1,13 @@
+{
+  "flightId": 1,
+  "departureTime": "3025-02-04T20:23:30.556551",
+  "arrivalTime": "3025-02-04T22:23:30.556551",
+  "originPoint": "BAKU",
+  "destinationPoint": "ISTANBUL",
+  "freeSeats": 180,
+  "price": 200,
+  "aircraft": "BOEING_737",
+  "airline": "TURKISH_AIRLINES",
+  "duration": "2h 0m",
+  "status": "SCHEDULED"
+}
