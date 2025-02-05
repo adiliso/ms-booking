@@ -4,14 +4,16 @@ import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
-import az.edu.turing.booking.domain.repository.FlightSpecification;
 import az.edu.turing.booking.domain.repository.UserRepository;
+import az.edu.turing.booking.domain.specification.FlightSpecification;
 import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
+import az.edu.turing.booking.model.dto.response.PageResponse;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.service.impl.FlightServiceImpl;
 import az.edu.turing.booking.service.impl.UserServiceImpl;
@@ -24,11 +26,11 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,33 +79,39 @@ class FlightServiceTest {
 
     @Test
     void getAllInNext24Hours_Should_Return_Success() {
-        Pageable pageable = Pageable.ofSize(20);
-        given(flightRepository.findByDepartureTimeBetweenAndStatusIs(any(), any(),
-                any(), any()))
+        Pageable pageable = Pageable.ofSize(10);
+
+        given(flightRepository.findByDepartureTimeBetweenAndStatusIs(
+                any(LocalDateTime.class), any(LocalDateTime.class),
+                any(Pageable.class), any(FlightStatus.class)))
                 .willReturn(getFlightEntityWithPage(pageable));
 
-        Page<FlightResponse> result = flightService.getAllInNext24Hours(PAGE_NUMBER, PAGE_SIZE);
+        PageResponse<FlightResponse> response = flightService
+                .getAllInNext24Hours(PAGE_NUMBER, PAGE_SIZE);
+        Assertions.assertNotNull(response);
 
-        Assertions.assertNotNull(result);
-        then(flightRepository).should(times(1))
-                .findByDepartureTimeBetweenAndStatusIs(any(), any(), any(), any());
+        then(flightRepository).should(times(1)).
+                findByDepartureTimeBetweenAndStatusIs(
+                        any(LocalDateTime.class), any(LocalDateTime.class),
+                        any(Pageable.class), any(FlightStatus.class));
     }
 
     @Test
     void create_Should_Return_Success() {
-        UserEntity adminUser = new UserEntity();
+        var adminUser = new UserEntity();
         adminUser.setId(USER_ID);
         adminUser.setRole(UserRole.ADMIN);
+        var flight = getFlightEntity();
 
         given(userService.isAdmin(USER_ID)).willReturn(true);
-
-        FlightEntity flight = getFlightEntity();
         given(flightRepository.save(any(FlightEntity.class))).willReturn(flight);
 
         FlightResponse response = flightService.create(USER_ID, getFlightCreateRequest());
 
         Assertions.assertNotNull(response);
         then(userService).should(times(1)).isAdmin(USER_ID);
+        then(flightRepository).should(times(1))
+                .save(any(FlightEntity.class));
     }
 
     @Test
@@ -112,7 +120,6 @@ class FlightServiceTest {
                 () -> flightService.create(USER_ID, getFlightCreateRequest()));
 
         Assertions.assertEquals("Access Denied", ex.getMessage());
-        then(flightRepository).should(never()).save(any());
     }
 
     @Test
@@ -138,6 +145,8 @@ class FlightServiceTest {
 
         then(userService).should(times(1)).isAdmin(USER_ID);
         then(flightRepository).should(times(1)).save(any(FlightEntity.class));
+        then(flightRepository).should(times(1)).findById(FLIGHT_ID);
+        then(flightDetailsRepository).should(times(1)).findById(FLIGHT_ID);
     }
 
 
@@ -154,14 +163,25 @@ class FlightServiceTest {
                 () -> flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()));
 
         Assertions.assertEquals("Flight not found", ex.getMessage());
+
+        then(userRepository).should(never()).save(any());
+        then(flightRepository).should(never()).save(any());
     }
 
     @Test
     void update_Should_Throw_AccessDeniedException_WhenUserIsNotAdmin() {
+        UserEntity adminUser = new UserEntity();
+        adminUser.setId(USER_ID);
+        adminUser.setRole(UserRole.ADMIN);
+
+        given(userService.isAdmin(USER_ID)).willReturn(false);
+
         BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()));
 
         Assertions.assertEquals("Access Denied", ex.getMessage());
+
+        then(flightRepository).should(never()).save(any());
     }
 
     @Test
@@ -172,11 +192,14 @@ class FlightServiceTest {
 
         FlightDetailsResponse response = flightService.getInfoById(FLIGHT_ID);
         Assertions.assertNotNull(response);
+
         then(flightRepository).should(times(1)).findById(FLIGHT_ID);
     }
 
     @Test
     void getInfoById_Should_Throw_NotFoundException_WhenIdNotFound() {
+        given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.empty());
+
         BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.getInfoById(FLIGHT_ID));
 
@@ -201,10 +224,10 @@ class FlightServiceTest {
             flightSpecMock.when(() -> FlightSpecification.hasDepartureTimeBetween(any(), any())).thenReturn(specMock);
             flightSpecMock.when(() -> FlightSpecification.hasPriceBetween(any(), any())).thenReturn(specMock);
 
-            Page<FlightResponse> response = flightService.search(filter, PAGE_NUMBER, PAGE_SIZE);
+            PageResponse<FlightResponse> response = flightService.search(filter, PAGE_NUMBER, PAGE_SIZE);
 
             Assertions.assertNotNull(response);
-            Assertions.assertEquals(getFlightResponseWithPage(pageable).getContent(), response.getContent());
+            Assertions.assertEquals(getFlightResponseWithPage().getData(), response.getData());
         }
 
         then(flightRepository).should(times(1)).findAll(any(Specification.class), eq(pageable));

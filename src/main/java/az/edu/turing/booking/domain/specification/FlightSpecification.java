@@ -1,4 +1,4 @@
-package az.edu.turing.booking.domain.repository;
+package az.edu.turing.booking.domain.specification;
 
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.model.enums.City;

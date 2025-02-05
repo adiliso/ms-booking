@@ -12,13 +12,13 @@ import az.edu.turing.booking.model.dto.request.FlightStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.model.enums.FlightStatus;
 import az.edu.turing.booking.service.FlightService;
 import az.edu.turing.booking.service.UserService;
 import az.edu.turing.booking.util.FlightSpecificationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -119,16 +119,20 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Page<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize) {
+    public PageResponse<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber, pageSize);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next24Hours = now.plusHours(24);
 
-        Page<FlightEntity> flights = flightRepository.findByDepartureTimeBetweenAndStatusIs(now, next24Hours, pageable,
-                FlightStatus.SCHEDULED);
+        var responses = flightRepository.findByDepartureTimeBetweenAndStatusIs(now, next24Hours, pageable,
+                FlightStatus.SCHEDULED).map(flightMapper::toResponse);
 
         log.info("Finding flights in next 24 hours...");
-        return flights.map(flightMapper::toResponse);
+        return PageResponse.of(responses.getContent(),
+                pageNumber,
+                pageSize,
+                responses.getTotalElements(),
+                responses.getTotalPages());
     }
 
     @Override
@@ -138,10 +142,16 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Page<FlightResponse> search(FlightFilter filter, final int pageNumber, final int pageSize) {
+    public PageResponse<FlightResponse> search(FlightFilter filter, final int pageNumber, final int pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return flightRepository.findAll(FlightSpecificationUtils.getSpecification(filter), pageable)
+        var responses = flightRepository.findAll(FlightSpecificationUtils.getSpecification(filter), pageable)
                 .map(flightMapper::toResponse);
+
+        return PageResponse.of(responses.getContent(),
+                pageNumber,
+                pageSize,
+                responses.getTotalElements(),
+                responses.getTotalPages());
     }
 
     private FlightDetailEntity getFlightDetails(Long flightId) {

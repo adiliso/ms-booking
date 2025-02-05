@@ -55,30 +55,30 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<UserDto> updateUserStatus
+    public ResponseEntity<UserDto> updateStatus
             (@PathVariable Long id, @Valid @RequestBody UserStatusUpdateRequest request) {
         return ResponseEntity.ok(userService.updateStatus(id, request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@NotNull @PathVariable Long id) {
+    public ResponseEntity<UserDto> getById(@NotNull @PathVariable Long id) {
         return ResponseEntity.ok(userService.getById(id));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserDto> getUserByUsername(@NotBlank @PathVariable String username) {
+    public ResponseEntity<UserDto> getByUsername(@NotBlank @PathVariable String username) {
         return ResponseEntity.ok(userService.getByUsername(username));
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserDto>> getAllUsers(
+    public ResponseEntity<Page<UserDto>> getAll(
             @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER, required = false) @Min(0) int pageNumber,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE, required = false) @Min(1) int pageSize) {
         return ResponseEntity.ok(userService.findAll(pageNumber, pageSize));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }

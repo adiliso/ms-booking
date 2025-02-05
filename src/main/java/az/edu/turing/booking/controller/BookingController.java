@@ -34,14 +34,14 @@ public class BookingController {
     private final BookingServiceImpl bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingDto> createBooking(
+    public ResponseEntity<BookingDto> create(
             @RequestHeader("User-Id") Long userId,
             @Valid @RequestBody BookingCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(userId, request));
     }
 
     @PutMapping("/{bookingId}")
-    public ResponseEntity<BookingDto> updateBookingById(
+    public ResponseEntity<BookingDto> updateById(
             @RequestHeader("User-Id") Long userId,
             @PathVariable Long bookingId,
             @Valid @RequestBody BookingUpdateRequest request) {
@@ -49,17 +49,17 @@ public class BookingController {
     }
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<Collection<BookingDto>> getBookingsByUsername(@PathVariable String username) {
+    public ResponseEntity<Collection<BookingDto>> getByUsername(@PathVariable String username) {
         return ResponseEntity.ok(bookingService.getBookingsByUsername(username));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookingDto> getBookingById(@PathVariable Long id) {
+    public ResponseEntity<BookingDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.getBookingById(id));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<BookingDto> updateBookingStatus(
+    public ResponseEntity<BookingDto> updateStatus(
             @RequestHeader("User-Id") Long userId,
             @PathVariable Long id,
             @RequestParam BookingStatus status) {
@@ -67,7 +67,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
         bookingService.cancel(id);
         return ResponseEntity.noContent().build();
     }
