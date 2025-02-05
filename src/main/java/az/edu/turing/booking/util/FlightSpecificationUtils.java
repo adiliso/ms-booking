@@ -1,18 +1,21 @@
 package az.edu.turing.booking.util;
 
 import az.edu.turing.booking.domain.entity.FlightEntity;
-import az.edu.turing.booking.domain.repository.FlightSpecification;
+import az.edu.turing.booking.domain.specification.FlightSpecification;
 import az.edu.turing.booking.model.dto.FlightFilter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FlightSpecificationUtils {
 
     public static Specification<FlightEntity> getSpecification(FlightFilter filter) {
         Specification<FlightEntity> spec = Specification.where(FlightSpecification.isScheduled());
-
+        
         if (filter.getOriginPoints() != null && !filter.getOriginPoints().isEmpty()) {
             spec = spec.and(FlightSpecification.hasOriginPoints(filter.getOriginPoints()));
         }

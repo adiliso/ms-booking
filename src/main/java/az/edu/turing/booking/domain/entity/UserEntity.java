@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
@@ -32,6 +33,7 @@ public class UserEntity extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @ToString.Exclude
     @Column(length = 64)
     private String password;
 

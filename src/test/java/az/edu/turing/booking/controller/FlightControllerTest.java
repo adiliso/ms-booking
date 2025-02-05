@@ -135,7 +135,6 @@ class FlightControllerTest {
 
     @Test
     void update_Should_Return_Success() throws Exception {
-
         given(flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()))
                 .willReturn(getFlightResponse());
 
