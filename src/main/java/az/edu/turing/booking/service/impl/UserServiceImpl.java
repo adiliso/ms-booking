@@ -9,12 +9,13 @@ import az.edu.turing.booking.model.dto.request.AdminCreateRequest;
 import az.edu.turing.booking.model.dto.request.UserCreateRequest;
 import az.edu.turing.booking.model.dto.request.UserStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.UsernameUpdateRequest;
+import az.edu.turing.booking.model.dto.response.PageResponse;
+import az.edu.turing.booking.model.dto.response.UserResponse;
 import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.model.enums.UserStatus;
 import az.edu.turing.booking.service.UserService;
 import az.edu.turing.booking.util.UserUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,16 +36,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto create(UserCreateRequest request) {
+    public UserResponse create(UserCreateRequest request) {
         checkUsernameAlreadyExists(request.getUsername());
         UserEntity userEntity = userMapper.toEntity(request);
 
-        return userMapper.toDto(userRepository.save(userEntity));
+        return userMapper.toResponse(userRepository.save(userEntity));
     }
 
     @Transactional
     @Override
-    public UserDto create(Long id, AdminCreateRequest request) {
+    public UserResponse create(Long id, AdminCreateRequest request) {
         isAdmin(id);
         checkPassword(id, request.getAdminPassword());
         checkUsernameAlreadyExists(request.getUsername());
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userMapper.toEntity(request);
         userEntity.setPassword(UserUtils.hashPassword(request.getPassword()));
 
-        return userMapper.toDto(userRepository.save(userEntity));
+        return userMapper.toResponse(userRepository.save(userEntity));
     }
 
     @Override
@@ -71,22 +72,22 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto updateUsername(Long id, UsernameUpdateRequest request) {
+    public UserResponse updateUsername(Long id, UsernameUpdateRequest request) {
         isAdmin(id);
 
         UserEntity userEntity = findById(id);
         userEntity.setUsername(request.getUsername());
 
-        return userMapper.toDto(userEntity);
+        return userMapper.toResponse(userEntity);
     }
 
     @Transactional
     @Override
-    public UserDto updateStatus(Long id, UserStatusUpdateRequest request) {
+    public UserResponse updateStatus(Long id, UserStatusUpdateRequest request) {
         UserEntity userEntity = findById(id);
         userEntity.setStatus(request.getStatus());
 
-        return userMapper.toDto(userEntity);
+        return userMapper.toResponse(userEntity);
     }
 
     @Override
@@ -100,9 +101,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAll(final int pageNumber, final int pageSize) {
+    public PageResponse<UserResponse> findAll(final int pageNumber, final int pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return userRepository.findAll(pageable).map(userMapper::toDto);
+        var responses = userRepository.findAll(pageable).map(userMapper::toResponse);
+
+        responses.getContent().forEach(userEntity ->
+                System.out.println("Fetched UserEntity Username: " + userEntity.getUsername())
+        );
+
+        return PageResponse.of(responses.getContent(),
+                pageNumber,
+                pageSize,
+                responses.getTotalElements(),
+                responses.getTotalPages());
     }
 
     @Override
