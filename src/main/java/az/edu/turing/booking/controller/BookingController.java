@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
+import java.util.Set;
 
 @Validated
 @RestController
@@ -49,7 +49,7 @@ public class BookingController {
     }
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<Collection<BookingDto>> getByUsername(@PathVariable String username) {
+    public ResponseEntity<Set<BookingDto>> getByUsername(@PathVariable String username) {
         return ResponseEntity.ok(bookingService.getBookingsByUsername(username));
     }
 
@@ -67,8 +67,10 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancel(@PathVariable Long id) {
-        bookingService.cancel(id);
+    public ResponseEntity<Void> cancel(
+            @RequestHeader("User-Id") Long userId,
+            @PathVariable Long id) {
+        bookingService.cancel(userId, id);
         return ResponseEntity.noContent().build();
     }
 }

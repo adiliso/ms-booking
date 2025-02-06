@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
 import static az.edu.turing.booking.model.enums.ErrorEnum.PASSWORDS_DONT_MATCH;
-import static az.edu.turing.booking.model.enums.ErrorEnum.USERNAME_NOT_FOUND;
 import static az.edu.turing.booking.model.enums.ErrorEnum.USER_ALREADY_EXISTS;
 import static az.edu.turing.booking.model.enums.ErrorEnum.USER_NOT_FOUND;
 
@@ -109,7 +108,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new BaseException(USERNAME_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
     }
 
     @Transactional

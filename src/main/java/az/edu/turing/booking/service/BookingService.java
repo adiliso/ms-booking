@@ -19,5 +19,7 @@ public interface BookingService {
 
     BookingDto updateStatus(Long userId, Long bookingId, BookingStatus status);
 
-    void cancel(Long id);
+    default void cancel(Long userId, Long id){
+        updateStatus(userId, id, BookingStatus.CANCELLED);
+    }
 }

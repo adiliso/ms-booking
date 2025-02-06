@@ -26,7 +26,7 @@ public final class FlightTestConstant {
     public static final Long TOTAL_ELEMENTS = 1L;
     public static final Integer TOTAL_PAGES_COUNT = 1;
     public static final Long USER_ID = 1L;
-    public static final Long FLIGHT_ID = 1L;
+    public static final Long FLIGHT_ID = 2L;
     public static final Double PRICE = 200.0;
     public static final Integer FREE_SEATS = 180;
     public static final Integer TOTAL_SEATS = 200;

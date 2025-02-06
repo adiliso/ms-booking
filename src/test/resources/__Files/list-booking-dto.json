@@ -1,0 +1,9 @@
+[
+  {
+    "id": 3,
+    "flightId": 2,
+    "totalPrice": 400,
+    "status": "CONFIRMED",
+    "createdBy": 1
+  }
+]

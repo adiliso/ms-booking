@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
+
+    boolean existsByIdAndCreatedByIs(Long bookingId, Long createdBy);
 }
