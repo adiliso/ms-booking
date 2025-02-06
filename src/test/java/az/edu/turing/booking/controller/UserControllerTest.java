@@ -50,7 +50,7 @@ public class UserControllerTest {
     private UserController userController;
 
     @Test
-    void getByUsernameShouldReturnSuccess() throws Exception {
+    void getByUsername_Should_Return_Success() throws Exception {
         UserDto userDto = new UserDto();
         given(userService.getByUsername("Joshgun")).willReturn(userDto);
 
@@ -63,7 +63,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void getByIdShouldReturnSuccess() throws Exception {
+    void getById_Should_Return_Success() throws Exception {
         UserDto userDto = new UserDto();
         given(userService.getById(1L)).willReturn(userDto);
         mockMvc.perform(get("/api/v1/users/{id}", 1L))
@@ -75,7 +75,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void deleteByIdShouldReturnSuccess() throws Exception {
+    void deleteById_Should_Return_Success() throws Exception {
         mockMvc.perform(delete("/api/v1/users/{id}", 1L))
                 .andExpect(status().isNoContent())
                 .andDo(MockMvcResultHandlers.print());
@@ -84,7 +84,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateStatusShouldReturnSuccess() throws Exception {
+    void updateStatus_Should_Return_Success() throws Exception {
         given(userService.updateStatus(USER_ID, getUserStatusUpdateRequest()))
                 .willReturn(getUserResponse());
 
