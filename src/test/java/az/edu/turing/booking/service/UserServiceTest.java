@@ -4,7 +4,7 @@ import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.UserRepository;
 import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.UserMapper;
-import az.edu.turing.booking.model.dto.UserDto;
+import az.edu.turing.booking.model.dto.response.UserResponse;
 import az.edu.turing.booking.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,8 @@ import java.util.Optional;
 
 import static az.edu.turing.booking.common.UserTestConstant.USERNAME;
 import static az.edu.turing.booking.common.UserTestConstant.USER_ID;
+import static az.edu.turing.booking.common.UserTestConstant.getUserEntity;
+import static az.edu.turing.booking.common.UserTestConstant.getUserResponse;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -40,12 +42,7 @@ public class UserServiceTest {
 
     @Test
     void findByUsername_Should_Return_UserEntity() {
-        UserEntity expectedUser = UserEntity.builder()
-                .id(USER_ID)
-                .username(USERNAME)
-                .build();
-
-        given(userRepository.findByUsername(USERNAME)).willReturn(Optional.of(expectedUser));
+        given(userRepository.findByUsername(USERNAME)).willReturn(Optional.of(getUserEntity()));
 
         UserEntity actualUser = userService.findByUsername(USERNAME);
 
@@ -68,26 +65,18 @@ public class UserServiceTest {
     }
 
     @Test
-    void getById_Should_Return_UserDto() {
-        UserEntity mockUserEntity = new UserEntity();
-        mockUserEntity.setId(USER_ID);
-        mockUserEntity.setUsername(USERNAME);
+    void getById_Should_Return_UserResponse() {
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(getUserEntity()));
+        when(userMapper.toResponse(getUserEntity())).thenReturn(getUserResponse());
 
-        UserDto mockUserDto = new UserDto();
-        mockUserDto.setId(USER_ID);
-        mockUserDto.setUsername(USERNAME);
-
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(mockUserEntity));
-        when(userMapper.toDto(mockUserEntity)).thenReturn(mockUserDto);
-
-        UserDto result = userService.getById(USER_ID);
+        UserResponse result = userService.getById(USER_ID);
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(USER_ID);
         assertThat(result.getUsername()).isEqualTo(USERNAME);
 
         verify(userRepository, times(1)).findById(USER_ID);
-        verify(userMapper, times(1)).toDto(mockUserEntity);
+        verify(userMapper, times(1)).toResponse(getUserEntity());
     }
 
     @Test
