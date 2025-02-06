@@ -61,12 +61,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@NotNull @PathVariable Long id) {
+    public ResponseEntity<UserResponse> getById(@NotNull @PathVariable Long id) {
         return ResponseEntity.ok(userService.getById(id));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserDto> getByUsername(@NotBlank @PathVariable String username) {
+    public ResponseEntity<UserResponse> getByUsername(@NotBlank @PathVariable String username) {
         return ResponseEntity.ok(userService.getByUsername(username));
     }
 

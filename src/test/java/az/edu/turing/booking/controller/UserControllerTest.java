@@ -1,6 +1,5 @@
 package az.edu.turing.booking.controller;
 
-import az.edu.turing.booking.model.dto.UserDto;
 import az.edu.turing.booking.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import static az.edu.turing.booking.common.FlightTestConstant.getFlightCreateReq
 import static az.edu.turing.booking.common.JsonFiles.PAGEABLE_USER_RESPONSE;
 import static az.edu.turing.booking.common.JsonFiles.USER_RESPONSE;
 import static az.edu.turing.booking.common.TestUtils.json;
+import static az.edu.turing.booking.common.UserTestConstant.USERNAME;
 import static az.edu.turing.booking.common.UserTestConstant.getUserCreateRequest;
 import static az.edu.turing.booking.common.UserTestConstant.getUserResponse;
 import static az.edu.turing.booking.common.UserTestConstant.getUserResponsePage;
@@ -51,27 +51,30 @@ public class UserControllerTest {
 
     @Test
     void getByUsername_Should_Return_Success() throws Exception {
-        UserDto userDto = new UserDto();
-        given(userService.getByUsername("Joshgun")).willReturn(userDto);
+        given(userService.getByUsername(USERNAME)).willReturn(getUserResponse());
 
-        mockMvc.perform(get("/api/v1/users/username/{username}", "Joshgun"))
+        String expectedJson = json(USER_RESPONSE);
+
+        mockMvc.perform(get("/api/v1/users/username/{username}", USERNAME)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(userDto)))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(expectedJson));
 
-        then(userService).should(times(1)).getByUsername("Joshgun");
+        then(userService).should(times(1)).getByUsername(USERNAME);
     }
 
     @Test
     void getById_Should_Return_Success() throws Exception {
-        UserDto userDto = new UserDto();
-        given(userService.getById(1L)).willReturn(userDto);
-        mockMvc.perform(get("/api/v1/users/{id}", 1L))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(userDto)))
-                .andDo(MockMvcResultHandlers.print());
+        given(userService.getById(USER_ID)).willReturn(getUserResponse());
 
-        then(userService).should(times(1)).getById(1L);
+        String expectedJson = json(USER_RESPONSE);
+
+        mockMvc.perform(get("/api/v1/users/{id}", USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+
+        then(userService).should(times(1)).getById(USER_ID);
     }
 
     @Test

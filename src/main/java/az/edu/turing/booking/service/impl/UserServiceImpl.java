@@ -91,13 +91,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getById(Long id) {
-        return userMapper.toDto(findById(id));
+    public UserResponse getById(Long id) {
+        return userMapper.toResponse(findById(id));
     }
 
     @Override
-    public UserDto getByUsername(String username) {
-        return userMapper.toDto(findByUsername(username));
+    public UserResponse getByUsername(String username) {
+        return userMapper.toResponse(findByUsername(username));
     }
 
     @Override
