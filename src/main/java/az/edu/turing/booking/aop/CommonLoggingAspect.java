@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Arrays;
+
 @Aspect
 @Component
 @Slf4j
@@ -32,8 +34,8 @@ public class CommonLoggingAspect {
         final Object result = joinPoint.proceed();
         final long elapsedTime = System.currentTimeMillis() - start;
 
-        log.info("[Request] | URI: {} | {}.{}",
-                uri, className, methodName);
+        log.info("[Request] | URI: {} | {}.{} | Args: {}",
+                uri, className, methodName, Arrays.toString(joinPoint.getArgs()));
 
         log.info("[Response] | URI: {} | {}.{} | Elapsed time: {} ms | Result: {}",
                 uri, className, methodName, elapsedTime, result);
