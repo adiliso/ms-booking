@@ -19,11 +19,11 @@ public interface UserService {
 
     UserResponse updateStatus(Long id, UserStatusUpdateRequest request);
 
-    UserDto getById(Long id);
+    UserResponse getById(Long id);
 
     UserEntity findByUsername(String username);
 
-    UserDto getByUsername(String username);
+    UserResponse getByUsername(String username);
 
     PageResponse<UserResponse> findAll(final int pageNumber, final int pageSize);
 
