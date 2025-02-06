@@ -6,17 +6,18 @@ import az.edu.turing.booking.model.dto.request.AdminCreateRequest;
 import az.edu.turing.booking.model.dto.request.UserCreateRequest;
 import az.edu.turing.booking.model.dto.request.UserStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.UsernameUpdateRequest;
-import org.springframework.data.domain.Page;
+import az.edu.turing.booking.model.dto.response.PageResponse;
+import az.edu.turing.booking.model.dto.response.UserResponse;
 
 public interface UserService {
 
-    UserDto create(UserCreateRequest request);
+    UserResponse create(UserCreateRequest request);
 
-    UserDto create(Long userId, AdminCreateRequest request);
+    UserResponse create(Long userId, AdminCreateRequest request);
 
-    UserDto updateUsername(Long id, UsernameUpdateRequest request);
+    UserResponse updateUsername(Long id, UsernameUpdateRequest request);
 
-    UserDto updateStatus(Long id, UserStatusUpdateRequest request);
+    UserResponse updateStatus(Long id, UserStatusUpdateRequest request);
 
     UserDto getById(Long id);
 
@@ -24,7 +25,7 @@ public interface UserService {
 
     UserDto getByUsername(String username);
 
-    Page<UserDto> findAll(final int pageNumber, final int pageSize);
+    PageResponse<UserResponse> findAll(final int pageNumber, final int pageSize);
 
     boolean isAdmin(Long id);
 

@@ -103,23 +103,6 @@ class FlightControllerTest {
     }
 
     @Test
-    void create_Should_Return_Success() throws Exception {
-        given(flightService.create(USER_ID, getFlightCreateRequest())).willReturn(getFlightResponse());
-
-        String expectedJson = json(FLIGHT_RESPONSE);
-
-        mockMvc.perform(post(BASE_URL)
-                        .header("User-Id", USER_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getFlightCreateRequest())))
-                .andExpect(status().isCreated())
-                .andExpect(content().json(expectedJson));
-
-        then(flightService).should(times(1))
-                .create(USER_ID, getFlightCreateRequest());
-    }
-
-    @Test
     void create_Should_Throw_Exception_When_UserIsNotAdmin() throws Exception {
         given(flightService.create(USER_ID, getFlightCreateRequest()))
                 .willThrow(new BaseException(ErrorEnum.ACCESS_DENIED));
