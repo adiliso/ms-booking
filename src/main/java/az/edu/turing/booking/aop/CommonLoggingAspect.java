@@ -30,12 +30,12 @@ public class CommonLoggingAspect {
             uri = request.getRequestURI();
         }
 
+        log.info("[Request] | URI: {} | {}.{} | Args: {}",
+                uri, className, methodName, Arrays.toString(joinPoint.getArgs()));
+
         final long start = System.currentTimeMillis();
         final Object result = joinPoint.proceed();
         final long elapsedTime = System.currentTimeMillis() - start;
-
-        log.info("[Request] | URI: {} | {}.{} | Args: {}",
-                uri, className, methodName, Arrays.toString(joinPoint.getArgs()));
 
         log.info("[Response] | URI: {} | {}.{} | Elapsed time: {} ms | Result: {}",
                 uri, className, methodName, elapsedTime, result);

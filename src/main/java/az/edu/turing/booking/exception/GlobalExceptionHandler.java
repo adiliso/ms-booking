@@ -70,12 +70,8 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-    protected void addErrorLog(int statusCode, String errorMessage, String exceptionType) {
-        log.error("HTTP Status: {} | Error Message: {} | Exception Type: {}", statusCode, errorMessage, exceptionType);
-    }
-
     protected void addErrorLog(HttpStatus httpStatus, String errorMessage, String exceptionType) {
         int statusCode = (httpStatus != null) ? httpStatus.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
-        addErrorLog(statusCode, errorMessage, exceptionType);
+        log.error("HTTP Status: {} | Error Message: {} | Exception Type: {}", statusCode, errorMessage, exceptionType);
     }
 }
