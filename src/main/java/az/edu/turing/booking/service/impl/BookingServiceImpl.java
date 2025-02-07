@@ -8,11 +8,14 @@ import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.BookingService;
 import az.edu.turing.booking.service.FlightService;
 import az.edu.turing.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,12 +86,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Set<BookingDto> getBookingsByUsername(String username) {
-        return userService.findByUsername(username)
-                .getBookings()
-                .stream()
-                .map(bookingMapper::toDto)
-                .collect(Collectors.toSet());
+    public PageResponse<BookingDto> getBookingsByUsername(String username, final int pageNumber, final int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        var responses = bookingRepository.findAllByUsersUsername(username, pageable)
+                .map(bookingMapper::toDto);
+
+        return PageResponse.of(responses.getContent(),
+                pageNumber,
+                pageSize,
+                responses.getTotalElements(),
+                responses.getTotalPages());
     }
 
     @Override

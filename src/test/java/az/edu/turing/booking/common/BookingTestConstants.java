@@ -5,9 +5,14 @@ import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.model.enums.BookingStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static az.edu.turing.booking.common.FlightTestConstant.getFlightEntity;
@@ -16,6 +21,11 @@ import static az.edu.turing.booking.model.enums.UserStatus.ACTIVE;
 
 public final class BookingTestConstants {
 
+    public static final Integer PAGE_SIZE = 10;
+    public static final Integer PAGE_NUMBER = 0;
+    public static final Long TOTAL_ELEMENTS = 1L;
+    public static final Integer TOTAL_PAGES_COUNT = 1;
+    public static final PageRequest PAGE_REQUEST = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
     public static final Long BOOKING_ID = 3L;
     public static final Long USER_ID = 1L;
     public static final Long FLIGHT_ID = 2L;
@@ -63,6 +73,18 @@ public final class BookingTestConstants {
                 .status(STATUS)
                 .createdBy(USER_ID)
                 .build();
+    }
+
+    public static PageResponse<BookingDto> getBookingDtoDtoWithPage() {
+        return PageResponse.of(List.of(getBookingDto()),
+                PAGE_NUMBER,
+                PAGE_SIZE,
+                TOTAL_ELEMENTS,
+                TOTAL_PAGES_COUNT);
+    }
+
+    public static Page<BookingEntity> getBookingEntityWithPage() {
+        return new PageImpl<>(List.of(getBookingEntity()), PAGE_REQUEST, TOTAL_ELEMENTS);
     }
 
     public static BookingUpdateRequest getBookingUpdateRequest() {

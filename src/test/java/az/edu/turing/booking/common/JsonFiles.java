@@ -6,5 +6,5 @@ public interface JsonFiles {
     String FLIGHT_DETAIL_RESPONSE = "flight-detail-response.json";
     String FLIGHT_RESPONSE = "flight-response.json";
     String BOOKING_DTO = "booking-dto.json";
-    String LIST_BOOKING_DTO = "list-booking-dto.json";
+    String PAGEABLE_BOOKING_DTO = "pageable-booking-dto.json";
 }

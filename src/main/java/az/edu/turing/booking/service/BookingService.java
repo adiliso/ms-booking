@@ -3,6 +3,7 @@ package az.edu.turing.booking.service;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.model.enums.BookingStatus;
 
 import java.util.Collection;
@@ -13,7 +14,7 @@ public interface BookingService {
 
     BookingDto update(Long userId, Long bookingId, BookingUpdateRequest request);
 
-    Collection<BookingDto> getBookingsByUsername(String username);
+    PageResponse<BookingDto> getBookingsByUsername(String username, final int pageNumber, final int pageSize);
 
     BookingDto getBookingById(Long id);
 

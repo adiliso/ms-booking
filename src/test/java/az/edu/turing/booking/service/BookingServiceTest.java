@@ -8,6 +8,7 @@ import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.BookingMapper;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.service.impl.BookingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,15 +22,20 @@ import java.util.Optional;
 import java.util.Set;
 
 import static az.edu.turing.booking.common.BookingTestConstants.BOOKING_ID;
+import static az.edu.turing.booking.common.BookingTestConstants.FLIGHT_ID;
 import static az.edu.turing.booking.common.BookingTestConstants.NUMBER_OF_PASSENGERS;
+import static az.edu.turing.booking.common.BookingTestConstants.PAGE_NUMBER;
+import static az.edu.turing.booking.common.BookingTestConstants.PAGE_REQUEST;
+import static az.edu.turing.booking.common.BookingTestConstants.PAGE_SIZE;
 import static az.edu.turing.booking.common.BookingTestConstants.USERNAME;
 import static az.edu.turing.booking.common.BookingTestConstants.USER_ID;
 import static az.edu.turing.booking.common.BookingTestConstants.getBookingCreateRequest;
 import static az.edu.turing.booking.common.BookingTestConstants.getBookingDto;
+import static az.edu.turing.booking.common.BookingTestConstants.getBookingDtoDtoWithPage;
 import static az.edu.turing.booking.common.BookingTestConstants.getBookingEntity;
+import static az.edu.turing.booking.common.BookingTestConstants.getBookingEntityWithPage;
 import static az.edu.turing.booking.common.BookingTestConstants.getBookingUpdateRequest;
 import static az.edu.turing.booking.common.BookingTestConstants.getUserEntity;
-import static az.edu.turing.booking.common.FlightTestConstant.FLIGHT_ID;
 import static az.edu.turing.booking.common.FlightTestConstant.getFlightDetailsResponse;
 import static az.edu.turing.booking.model.enums.ErrorEnum.FLIGHT_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -194,13 +200,15 @@ class BookingServiceTest {
     void getBookingsByUsername_Should_Return_Success() {
         UserEntity userEntity = getUserEntity();
         userEntity.setBookings(Set.of(getBookingEntity()));
-        given(userService.findByUsername(USERNAME)).willReturn(userEntity);
+        given(bookingRepository.findAllByUsersUsername(USERNAME, PAGE_REQUEST))
+                .willReturn(getBookingEntityWithPage());
 
-        Set<BookingDto> bookings = bookingService.getBookingsByUsername(USERNAME);
+        PageResponse<BookingDto> bookings = bookingService.getBookingsByUsername(USERNAME, PAGE_NUMBER, PAGE_SIZE);
 
-        assertEquals(Set.of(getBookingDto()), bookings);
+        assertNotNull(bookings);
+        assertEquals(getBookingDtoDtoWithPage(), bookings);
 
-        then(userService).should(times(1)).findByUsername(USERNAME);
+        then(bookingRepository).should(times(1)).findAllByUsersUsername(USERNAME, PAGE_REQUEST);
     }
 
     @Test

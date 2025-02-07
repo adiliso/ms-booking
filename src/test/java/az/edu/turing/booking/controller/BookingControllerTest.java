@@ -10,17 +10,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Set;
-
 import static az.edu.turing.booking.common.BookingTestConstants.BOOKING_ID;
+import static az.edu.turing.booking.common.BookingTestConstants.PAGE_NUMBER;
+import static az.edu.turing.booking.common.BookingTestConstants.PAGE_SIZE;
 import static az.edu.turing.booking.common.BookingTestConstants.STATUS;
 import static az.edu.turing.booking.common.BookingTestConstants.USERNAME;
 import static az.edu.turing.booking.common.BookingTestConstants.USER_ID;
 import static az.edu.turing.booking.common.BookingTestConstants.getBookingCreateRequest;
 import static az.edu.turing.booking.common.BookingTestConstants.getBookingDto;
+import static az.edu.turing.booking.common.BookingTestConstants.getBookingDtoDtoWithPage;
 import static az.edu.turing.booking.common.BookingTestConstants.getBookingUpdateRequest;
 import static az.edu.turing.booking.common.JsonFiles.BOOKING_DTO;
-import static az.edu.turing.booking.common.JsonFiles.LIST_BOOKING_DTO;
+import static az.edu.turing.booking.common.JsonFiles.PAGEABLE_BOOKING_DTO;
 import static az.edu.turing.booking.common.TestUtils.json;
 import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
 import static az.edu.turing.booking.model.enums.ErrorEnum.BOOKING_NOT_FOUND;
@@ -111,23 +112,27 @@ class BookingControllerTest {
 
     @Test
     void getByUsername_Should_Return_Success() throws Exception {
-        given(bookingService.getBookingsByUsername(USERNAME)).willReturn(Set.of(getBookingDto()));
+        given(bookingService.getBookingsByUsername(USERNAME, PAGE_NUMBER, PAGE_SIZE))
+                .willReturn(getBookingDtoDtoWithPage());
 
         mockMvc.perform(get(BASE_URL + "/users/{username}", USERNAME))
                 .andExpect(status().isOk())
-                .andExpect(content().json(json(LIST_BOOKING_DTO)));
+                .andExpect(content().json(json(PAGEABLE_BOOKING_DTO)));
 
-        then(bookingService).should(times(1)).getBookingsByUsername(USERNAME);
+        then(bookingService).should(times(1))
+                .getBookingsByUsername(USERNAME, PAGE_NUMBER, PAGE_SIZE);
     }
 
     @Test
     void getByUsername_Should_Throw_Exception_When_UserNotFound() throws Exception {
-        given(bookingService.getBookingsByUsername(USERNAME)).willThrow(new BaseException(USER_NOT_FOUND));
+        given(bookingService.getBookingsByUsername(USERNAME, PAGE_NUMBER, PAGE_SIZE))
+                .willThrow(new BaseException(USER_NOT_FOUND));
 
         mockMvc.perform(get(BASE_URL + "/users/{username}", USERNAME))
                 .andExpect(status().isNotFound());
 
-        then(bookingService).should(times(1)).getBookingsByUsername(USERNAME);
+        then(bookingService).should(times(1))
+                .getBookingsByUsername(USERNAME, PAGE_NUMBER, PAGE_SIZE);
     }
 
     @Test
