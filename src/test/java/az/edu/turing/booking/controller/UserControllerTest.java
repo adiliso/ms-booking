@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import static az.edu.turing.booking.common.FlightTestConstant.PAGE_NUMBER;
 import static az.edu.turing.booking.common.FlightTestConstant.PAGE_SIZE;
 import static az.edu.turing.booking.common.FlightTestConstant.USER_ID;
-import static az.edu.turing.booking.common.FlightTestConstant.getFlightCreateRequest;
 import static az.edu.turing.booking.common.JsonFiles.PAGEABLE_USER_RESPONSE;
 import static az.edu.turing.booking.common.JsonFiles.USER_RESPONSE;
 import static az.edu.turing.booking.common.TestUtils.json;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-public class UserControllerTest {
+class UserControllerTest {
 
     private static final String BASE_URL = "/api/v1/users";
 
@@ -129,7 +128,7 @@ public class UserControllerTest {
         mockMvc.perform(post(BASE_URL)
                         .header("User-Id", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getFlightCreateRequest())))
+                        .content(objectMapper.writeValueAsString(getUserCreateRequest())))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(expectedJson));
 

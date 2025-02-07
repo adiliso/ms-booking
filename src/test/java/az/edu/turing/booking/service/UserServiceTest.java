@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
     @Spy
     UserMapper userMapper = UserMapper.INSTANCE;
@@ -59,7 +59,7 @@ public class UserServiceTest {
 
         assertThatThrownBy(() -> userService.findByUsername(USERNAME))
                 .isInstanceOf(BaseException.class)
-                .hasMessageContaining("Username not found");
+                .hasMessageContaining("User not found");
 
         then(userRepository).should(times(1)).findByUsername(USERNAME);
     }
