@@ -11,6 +11,6 @@ spring:
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
   datasource:
-    url: jdbc:postgresql://localhost:5433/booking
+    url: jdbc:postgresql://db_booking:5432/booking
     username: booking
     password: booking123

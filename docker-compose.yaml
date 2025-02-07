@@ -14,14 +14,13 @@ services:
       timeout: 5s
       retries: 5
 
-#  ms-booking:
-#    container_name: ms_booking_app
-#    ports:
-#      - "8080:8080"
-#    restart: unless-stopped
-#    build:
-#      dockerfile: Dockerfile
-#    depends_on:
-#      db_booking:
-#        condition: service_healthy
-#    network_mode: host
+  ms-booking:
+    container_name: ms_booking_app
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    build:
+      dockerfile: Dockerfile
+    depends_on:
+      db_booking:
+        condition: service_healthy
