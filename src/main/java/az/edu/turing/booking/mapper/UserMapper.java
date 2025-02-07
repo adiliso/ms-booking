@@ -4,6 +4,7 @@ import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.model.dto.UserDto;
 import az.edu.turing.booking.model.dto.request.AdminCreateRequest;
 import az.edu.turing.booking.model.dto.request.UserCreateRequest;
+import az.edu.turing.booking.model.dto.response.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -20,6 +21,8 @@ public interface UserMapper {
     @Mapping(target = "role", constant = "ADMIN")
     @Mapping(target = "status", constant = "ACTIVE")
     UserEntity toEntity(AdminCreateRequest request);
+
+    UserResponse toResponse(UserEntity entity);
 
     UserDto toDto(UserEntity userEntity);
 }
