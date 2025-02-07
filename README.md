@@ -26,12 +26,17 @@ Open terminal and:
 
 - `git clone https://github.com/adiliso/ms-booking.git` - clone the project
 - `cd ./ms-booking` - change directory into the project
-- `chmod +x start.sh` - add permission to `start.sh` file to be able to run command inside it
-- `chmod +x stop.sh` - add permission to `stop.sh` file to be able to run command inside it
-- `chmod +x gradlew`  - add permission to `gradlew` file to be able to clean and build
-- `./start.sh` - start app
-- `./stop.sh`  - stop app
 
+For Linux & macOS users only:
+
+- `chmod +x start` - add permission to `start` file to be able to run command inside it
+- `chmod +x stop` - add permission to `stop` file to be able to run command inside it
+- `chmod +x gradlew`  - add permission to `gradlew` file to be able to clean and build
+
+Then, start or stop the app:
+
+- `./start` - start app
+- `./stop`  - stop app
 
 ## Swagger Docs: ##
 
