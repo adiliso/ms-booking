@@ -29,8 +29,8 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "bookings")
-@EqualsAndHashCode(callSuper = true, exclude = "passengers")
+@Table(name = "booking")
+@EqualsAndHashCode(callSuper = true, exclude = "users")
 public class BookingEntity extends BaseEntity {
 
 
@@ -42,27 +42,27 @@ public class BookingEntity extends BaseEntity {
             CascadeType.PERSIST,
             CascadeType.MERGE
     })
-    @JoinTable(name = "bookings_passengers",
+    @JoinTable(name = "booking_users",
             joinColumns = @JoinColumn(name = "booking_id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id"))
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
-    private Set<UserEntity> passengers = new HashSet<>();
+    private Set<UserEntity> users = new HashSet<>();
 
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-        private BookingStatus status;
+    private BookingStatus status;
 
-    public void addPassenger(UserEntity passenger) {
-        passengers.add(passenger);
-        passenger.getBookings().add(this);
+    public void addUser(UserEntity user) {
+        users.add(user);
+        user.getBookings().add(this);
     }
 
-    public void removePassenger(UserEntity passenger) {
-        passengers.remove(passenger);
-        passenger.getBookings().remove(this);
+    public void removeUser(UserEntity user) {
+        users.remove(user);
+        user.getBookings().remove(this);
     }
 
 }

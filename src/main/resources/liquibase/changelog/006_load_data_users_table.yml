@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006_load_data_users_table
+      author: Adil Ismayilov
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO public.users (id, username, password, role, status) VALUES
+              (1, 'admin@gmail.com', 'SkYN/j4LmLFiyNocVf0fusMHCl8OzYM3xzga9hxSQAE=', 'ADMIN', 'ACTIVE'),
+              (2, 'anar@gmail.com', NULL, 'ADMIN', 'ACTIVE'),
+              (3, 'adil@gmail.com', NULL, 'ADMIN', 'ACTIVE'),
+              (4, 'ayten@gmail.com', NULL, 'ADMIN', 'ACTIVE'),
+              (5, 'joshgun@gmail.com', NULL, 'ADMIN', 'ACTIVE');
+
+        - sql:
+            sql: |
+              SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));

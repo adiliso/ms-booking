@@ -2,11 +2,11 @@ package az.edu.turing.booking.service;
 
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
+import az.edu.turing.booking.model.dto.request.FlightStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 
 public interface FlightService {
 
@@ -16,11 +16,13 @@ public interface FlightService {
 
     FlightResponse create(Long userId, FlightCreateRequest flightCreateRequest);
 
-    FlightResponse update(Long userId, Long id, FlightUpdateRequest flightUpdateRequest);
+    FlightResponse update(Long userId, Long flightId, FlightUpdateRequest flightUpdateRequest);
 
-    Page<FlightResponse> getAllInNext24Hours(Pageable pageable);
+    FlightResponse updateStatus(Long userId, Long flightId, FlightStatusUpdateRequest flightStatusUpdateRequest);
+
+    PageResponse<FlightResponse> getAllInNext24Hours(final int pageNumber, final int pageSize);
 
     FlightDetailsResponse getInfoById(Long id);
 
-    Page<FlightResponse> search(FlightFilter filter, Pageable pageable);
+    PageResponse<FlightResponse> search(FlightFilter filter, final int pageNumber, final int pageSize);
 }

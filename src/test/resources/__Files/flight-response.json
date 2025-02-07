@@ -1,0 +1,9 @@
+{
+  "flightId": 2,
+  "departureTime": "3025-02-04T20:23:30.556551",
+  "arrivalTime": "3025-02-04T22:23:30.556551",
+  "originPoint": "BAKU",
+  "destinationPoint": "ISTANBUL",
+  "freeSeats": 180,
+  "price": 200
+}

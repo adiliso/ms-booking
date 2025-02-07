@@ -4,9 +4,11 @@ package az.edu.turing.booking.controller;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.impl.BookingServiceImpl;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
+import static az.edu.turing.booking.model.constant.PageConstants.DEFAULT_PAGE_NUMBER;
+import static az.edu.turing.booking.model.constant.PageConstants.DEFAULT_PAGE_SIZE;
 
 @Validated
 @RestController
@@ -34,14 +37,14 @@ public class BookingController {
     private final BookingServiceImpl bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingDto> createBooking(
+    public ResponseEntity<BookingDto> create(
             @RequestHeader("User-Id") Long userId,
             @Valid @RequestBody BookingCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(userId, request));
     }
 
     @PutMapping("/{bookingId}")
-    public ResponseEntity<BookingDto> updateBookingById(
+    public ResponseEntity<BookingDto> updateById(
             @RequestHeader("User-Id") Long userId,
             @PathVariable Long bookingId,
             @Valid @RequestBody BookingUpdateRequest request) {
@@ -49,17 +52,20 @@ public class BookingController {
     }
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<Collection<BookingDto>> getBookingsByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(bookingService.getBookingsByUsername(username));
+    public ResponseEntity<PageResponse<BookingDto>> getByUsername(
+            @PathVariable String username,
+            @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER, required = false) @Min(0) int pageNumber,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE, required = false) @Min(1) int pageSize) {
+        return ResponseEntity.ok(bookingService.getBookingsByUsername(username, pageNumber, pageSize));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookingDto> getBookingById(@PathVariable Long id) {
+    public ResponseEntity<BookingDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.getBookingById(id));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<BookingDto> updateBookingStatus(
+    public ResponseEntity<BookingDto> updateStatus(
             @RequestHeader("User-Id") Long userId,
             @PathVariable Long id,
             @RequestParam BookingStatus status) {
@@ -67,8 +73,10 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
-        bookingService.cancel(id);
+    public ResponseEntity<Void> cancel(
+            @RequestHeader("User-Id") Long userId,
+            @PathVariable Long id) {
+        bookingService.cancel(userId, id);
         return ResponseEntity.noContent().build();
     }
 }

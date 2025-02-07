@@ -1,6 +1,6 @@
 package az.edu.turing.booking.mapper;
 
-import az.edu.turing.booking.domain.entity.FlightDetailsEntity;
+import az.edu.turing.booking.domain.entity.FlightDetailEntity;
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.model.dto.request.FlightCreateRequest;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
@@ -18,20 +18,21 @@ public interface FlightMapper {
     FlightMapper INSTANCE = Mappers.getMapper(FlightMapper.class);
 
     @Mapping(target = "flightId", source = "id")
-    @Mapping(target = "aircraft", source = "flightDetails.aircraft")
-    @Mapping(target = "airline", source = "flightDetails.airline")
-    @Mapping(target = "freeSeats", source = "flightDetails.freeSeats")
+    @Mapping(target = "aircraft", source = "flightDetail.aircraft")
+    @Mapping(target = "airline", source = "flightDetail.airline")
+    @Mapping(target = "freeSeats", source = "flightDetail.freeSeats")
     FlightDetailsResponse toDetailedResponse(FlightEntity flightEntity);
 
     @Mapping(target = "flightId", source = "id")
-    @Mapping(target = "freeSeats", source = "flightDetails.freeSeats")
+    @Mapping(target = "freeSeats", source = "flightDetail.freeSeats")
     FlightResponse toResponse(FlightEntity flightEntity);
 
+    @Mapping(target = "status", constant = "SCHEDULED")
     FlightEntity toEntity(Long createdBy, FlightCreateRequest request);
 
-    FlightDetailsEntity toDetailsEntity(FlightCreateRequest request);
+    FlightDetailEntity toDetailsEntity(FlightCreateRequest request);
 
     void updateEntity(@MappingTarget FlightEntity entity, Long updatedBy, FlightUpdateRequest request);
 
-    void updateDetailsEntity(@MappingTarget FlightDetailsEntity entity, FlightUpdateRequest request);
+    void updateDetailsEntity(@MappingTarget FlightDetailEntity entity, FlightUpdateRequest request);
 }

@@ -1,0 +1,12 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "username": "joshgun@example.com"
+    }
+  ],
+  "pageNumber": 0,
+  "pageSize": 10,
+  "totalElements": 1,
+  "totalPagesCount": 1
+}

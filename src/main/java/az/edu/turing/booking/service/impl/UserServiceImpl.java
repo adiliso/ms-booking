@@ -2,21 +2,29 @@ package az.edu.turing.booking.service.impl;
 
 import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.UserRepository;
-import az.edu.turing.booking.exception.AlreadyExistsException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.UserMapper;
 import az.edu.turing.booking.model.dto.UserDto;
+import az.edu.turing.booking.model.dto.request.AdminCreateRequest;
 import az.edu.turing.booking.model.dto.request.UserCreateRequest;
-import az.edu.turing.booking.model.dto.request.UserRoleUpdateRequest;
+import az.edu.turing.booking.model.dto.request.UserStatusUpdateRequest;
 import az.edu.turing.booking.model.dto.request.UsernameUpdateRequest;
+import az.edu.turing.booking.model.dto.response.PageResponse;
+import az.edu.turing.booking.model.dto.response.UserResponse;
 import az.edu.turing.booking.model.enums.UserRole;
+import az.edu.turing.booking.model.enums.UserStatus;
 import az.edu.turing.booking.service.UserService;
+import az.edu.turing.booking.util.UserUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
+import static az.edu.turing.booking.model.enums.ErrorEnum.PASSWORDS_DONT_MATCH;
+import static az.edu.turing.booking.model.enums.ErrorEnum.USER_ALREADY_EXISTS;
+import static az.edu.turing.booking.model.enums.ErrorEnum.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -28,73 +36,110 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto create(UserCreateRequest request) {
-
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new AlreadyExistsException("User already exists with username: " + request.getUsername());
-        }
+    public UserResponse create(UserCreateRequest request) {
+        checkUsernameAlreadyExists(request.getUsername());
         UserEntity userEntity = userMapper.toEntity(request);
 
-        return userMapper.toDto(userRepository.save(userEntity));
+        return userMapper.toResponse(userRepository.save(userEntity));
     }
 
     @Transactional
     @Override
-    public UserDto updateUsername(Long id, UsernameUpdateRequest request) {
+    public UserResponse create(Long id, AdminCreateRequest request) {
+        isAdmin(id);
+        checkPassword(id, request.getAdminPassword());
+        checkUsernameAlreadyExists(request.getUsername());
+
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new BaseException(PASSWORDS_DONT_MATCH);
+        }
+        UserEntity userEntity = userMapper.toEntity(request);
+        userEntity.setPassword(UserUtils.hashPassword(request.getPassword()));
+
+        return userMapper.toResponse(userRepository.save(userEntity));
+    }
+
+    @Override
+    public boolean checkPassword(Long id, String password) {
+        String hashedPassword = UserUtils.hashPassword(password);
+
+        if (!userRepository.existsByIdAndPassword(id, hashedPassword)) {
+            throw new BaseException(ACCESS_DENIED);
+        }
+
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public UserResponse updateUsername(Long id, UsernameUpdateRequest request) {
+        isAdmin(id);
 
         UserEntity userEntity = findById(id);
         userEntity.setUsername(request.getUsername());
-        userRepository.save(userEntity);
-        return userMapper.toDto(userEntity);
+
+        return userMapper.toResponse(userEntity);
     }
 
     @Transactional
     @Override
-    public UserDto updateRole(Long id, UserRoleUpdateRequest request) {
-
+    public UserResponse updateStatus(Long id, UserStatusUpdateRequest request) {
         UserEntity userEntity = findById(id);
-        userEntity.setRole(request.getRole());
-        userRepository.save(userEntity);
-        return userMapper.toDto(userEntity);
+        userEntity.setStatus(request.getStatus());
+
+        return userMapper.toResponse(userEntity);
     }
 
     @Override
-    public UserDto getById(Long id) {
-        return userMapper.toDto(findById(id));
+    public UserResponse getById(Long id) {
+        return userMapper.toResponse(findById(id));
     }
 
     @Override
-    public UserDto getByUsername(String username) {
-        return userMapper.toDto(findByUsername(username));
+    public UserResponse getByUsername(String username) {
+        return userMapper.toResponse(findByUsername(username));
     }
 
     @Override
-    public Page<UserDto> findAll(final int pageNumber, final int pageSize) {
+    public PageResponse<UserResponse> findAll(final int pageNumber, final int pageSize) {
         final Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return userRepository.findAll(pageable).map(userMapper::toDto);
+        var responses = userRepository.findAll(pageable).map(userMapper::toResponse);
+
+        responses.getContent().forEach(userEntity ->
+                System.out.println("Fetched UserEntity Username: " + userEntity.getUsername())
+        );
+
+        return PageResponse.of(responses.getContent(),
+                pageNumber,
+                pageSize,
+                responses.getTotalElements(),
+                responses.getTotalPages());
     }
 
     @Override
     public UserEntity findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new NotFoundException("User with id " + id + " not found");
-        }
-        userRepository.deleteById(id);
+        var request = new UserStatusUpdateRequest();
+        request.setStatus(UserStatus.DELETED);
+        updateStatus(id, request);
     }
 
     @Override
     public boolean isAdmin(Long id) {
-        if (!existsById(id)) {
-            throw new NotFoundException("User not found with id: " + id);
+        UserEntity user = userRepository.findByIdAndStatusIs(id, UserStatus.ACTIVE)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+
+        if (!user.getRole().equals(UserRole.ADMIN)) {
+            throw new BaseException(ACCESS_DENIED);
         }
-        return userRepository.existsByIdAndRole(id, UserRole.ADMIN);
+
+        return true;
     }
 
     @Override
@@ -104,6 +149,12 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity findById(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("User not found with id: " + id));
+                new BaseException(USER_NOT_FOUND));
+    }
+
+    private void checkUsernameAlreadyExists(String username) {
+        if (userRepository.existsByUsername(username)) {
+            throw new BaseException(USER_ALREADY_EXISTS);
+        }
     }
 }

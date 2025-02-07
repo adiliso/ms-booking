@@ -1,10 +1,11 @@
-package az.edu.turing.booking.exception;
+package az.edu.turing.booking.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -12,10 +13,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GlobalErrorResponse {
+public class GlobalErrorResponse implements Serializable {
 
     private UUID requestId;
-    private String errorCode;
+    private Integer errorCode;
     private String errorMessage;
     private LocalDateTime timestamp;
 }

@@ -1,7 +1,8 @@
-package az.edu.turing.booking.domain.repository;
+package az.edu.turing.booking.domain.specification;
 
 import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.model.enums.City;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,6 +12,11 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FlightSpecification {
+
+    public static Specification<FlightEntity> isScheduled() {
+        return ((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("status"), FlightStatus.SCHEDULED));
+    }
 
     public static Specification<FlightEntity> hasOriginPoints(List<City> origins) {
         return (root, query, criteriaBuilder) ->

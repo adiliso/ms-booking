@@ -4,15 +4,16 @@ import az.edu.turing.booking.domain.entity.FlightEntity;
 import az.edu.turing.booking.domain.entity.UserEntity;
 import az.edu.turing.booking.domain.repository.FlightDetailsRepository;
 import az.edu.turing.booking.domain.repository.FlightRepository;
-import az.edu.turing.booking.domain.repository.FlightSpecification;
 import az.edu.turing.booking.domain.repository.UserRepository;
-import az.edu.turing.booking.exception.AccessDeniedException;
-import az.edu.turing.booking.exception.NotFoundException;
+import az.edu.turing.booking.domain.specification.FlightSpecification;
+import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.mapper.FlightMapper;
 import az.edu.turing.booking.model.dto.FlightFilter;
 import az.edu.turing.booking.model.dto.request.FlightUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
 import az.edu.turing.booking.model.dto.response.FlightResponse;
+import az.edu.turing.booking.model.dto.response.PageResponse;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import az.edu.turing.booking.model.enums.UserRole;
 import az.edu.turing.booking.service.impl.FlightServiceImpl;
 import az.edu.turing.booking.service.impl.UserServiceImpl;
@@ -25,22 +26,24 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static az.edu.turing.booking.common.TestConstants.FLIGHT_ID;
-import static az.edu.turing.booking.common.TestConstants.USER_ID;
-import static az.edu.turing.booking.common.TestConstants.getFlightCreateRequest;
-import static az.edu.turing.booking.common.TestConstants.getFlightDetailsEntity;
-import static az.edu.turing.booking.common.TestConstants.getFlightEntity;
-import static az.edu.turing.booking.common.TestConstants.getFlightEntityWithPage;
-import static az.edu.turing.booking.common.TestConstants.getFlightResponseWithPage;
-import static az.edu.turing.booking.common.TestConstants.getFlightUpdateRequest;
+import static az.edu.turing.booking.common.FlightTestConstant.FLIGHT_ID;
+import static az.edu.turing.booking.common.FlightTestConstant.PAGE_NUMBER;
+import static az.edu.turing.booking.common.FlightTestConstant.PAGE_SIZE;
+import static az.edu.turing.booking.common.FlightTestConstant.USER_ID;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightCreateRequest;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightDetailsEntity;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightEntity;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightEntityWithPage;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightResponseWithPage;
+import static az.edu.turing.booking.common.FlightTestConstant.getFlightUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -76,40 +79,47 @@ class FlightServiceTest {
 
     @Test
     void getAllInNext24Hours_Should_Return_Success() {
-        Pageable pageable = Pageable.ofSize(20);
-        given(flightRepository.findByDepartureTimeBetween(any(), any(), any()))
+        Pageable pageable = Pageable.ofSize(10);
+
+        given(flightRepository.findByDepartureTimeBetweenAndStatusIs(
+                any(LocalDateTime.class), any(LocalDateTime.class),
+                any(Pageable.class), any(FlightStatus.class)))
                 .willReturn(getFlightEntityWithPage(pageable));
 
-        Page<FlightResponse> result = flightService.getAllInNext24Hours(pageable);
+        PageResponse<FlightResponse> response = flightService
+                .getAllInNext24Hours(PAGE_NUMBER, PAGE_SIZE);
+        Assertions.assertNotNull(response);
 
-        Assertions.assertNotNull(result);
-        then(flightRepository).should(times(1)).findByDepartureTimeBetween(any(), any(), any());
+        then(flightRepository).should(times(1)).
+                findByDepartureTimeBetweenAndStatusIs(
+                        any(LocalDateTime.class), any(LocalDateTime.class),
+                        any(Pageable.class), any(FlightStatus.class));
     }
 
     @Test
     void create_Should_Return_Success() {
-        UserEntity adminUser = new UserEntity();
+        var adminUser = new UserEntity();
         adminUser.setId(USER_ID);
         adminUser.setRole(UserRole.ADMIN);
+        var flight = getFlightEntity();
 
         given(userService.isAdmin(USER_ID)).willReturn(true);
-
-        FlightEntity flight = getFlightEntity();
         given(flightRepository.save(any(FlightEntity.class))).willReturn(flight);
 
         FlightResponse response = flightService.create(USER_ID, getFlightCreateRequest());
 
         Assertions.assertNotNull(response);
         then(userService).should(times(1)).isAdmin(USER_ID);
+        then(flightRepository).should(times(1))
+                .save(any(FlightEntity.class));
     }
 
     @Test
     void create_Should_Throw_AccessDeniedException_WhenUserIsNotAdmin() {
-        AccessDeniedException ex = Assertions.assertThrows(AccessDeniedException.class,
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.create(USER_ID, getFlightCreateRequest()));
 
-        Assertions.assertEquals("You cannot create a flight without an admin role", ex.getMessage());
-        then(flightRepository).should(never()).save(any());
+        Assertions.assertEquals("Access Denied", ex.getMessage());
     }
 
     @Test
@@ -126,7 +136,7 @@ class FlightServiceTest {
         given(userService.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.save(any(FlightEntity.class))).willReturn(flight);
         given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight));
-        given(flightDetailsRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight.getFlightDetails()));
+        given(flightDetailsRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight.getFlightDetail()));
 
         FlightResponse response = flightService.update(USER_ID, FLIGHT_ID, updateRequest);
 
@@ -135,6 +145,8 @@ class FlightServiceTest {
 
         then(userService).should(times(1)).isAdmin(USER_ID);
         then(flightRepository).should(times(1)).save(any(FlightEntity.class));
+        then(flightRepository).should(times(1)).findById(FLIGHT_ID);
+        then(flightDetailsRepository).should(times(1)).findById(FLIGHT_ID);
     }
 
 
@@ -147,37 +159,51 @@ class FlightServiceTest {
         given(userService.isAdmin(USER_ID)).willReturn(true);
         given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.empty());
 
-        NotFoundException ex = Assertions.assertThrows(NotFoundException.class,
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()));
 
-        Assertions.assertEquals("Flight not found with id: " + FLIGHT_ID, ex.getMessage());
+        Assertions.assertEquals("Flight not found", ex.getMessage());
+
+        then(userRepository).should(never()).save(any());
+        then(flightRepository).should(never()).save(any());
     }
 
     @Test
     void update_Should_Throw_AccessDeniedException_WhenUserIsNotAdmin() {
-        AccessDeniedException ex = Assertions.assertThrows(AccessDeniedException.class,
+        UserEntity adminUser = new UserEntity();
+        adminUser.setId(USER_ID);
+        adminUser.setRole(UserRole.ADMIN);
+
+        given(userService.isAdmin(USER_ID)).willReturn(false);
+
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()));
 
-        Assertions.assertEquals("You cannot update a flight without an admin role", ex.getMessage());
+        Assertions.assertEquals("Access Denied", ex.getMessage());
+
+        then(flightRepository).should(never()).save(any());
     }
 
     @Test
     void getInfoById_Should_Return_Success() {
         FlightEntity flight = getFlightEntity();
-        flight.setFlightDetails(getFlightDetailsEntity());
+        flight.setFlightDetail(getFlightDetailsEntity());
         given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.of(flight));
 
         FlightDetailsResponse response = flightService.getInfoById(FLIGHT_ID);
         Assertions.assertNotNull(response);
+
         then(flightRepository).should(times(1)).findById(FLIGHT_ID);
     }
 
     @Test
     void getInfoById_Should_Throw_NotFoundException_WhenIdNotFound() {
-        NotFoundException ex = Assertions.assertThrows(NotFoundException.class,
+        given(flightRepository.findById(FLIGHT_ID)).willReturn(Optional.empty());
+
+        BaseException ex = Assertions.assertThrows(BaseException.class,
                 () -> flightService.getInfoById(FLIGHT_ID));
 
-        Assertions.assertEquals("Flight not found with id: " + FLIGHT_ID, ex.getMessage());
+        Assertions.assertEquals("Flight not found", ex.getMessage());
 
         then(flightRepository).should(times(1)).findById(FLIGHT_ID);
     }
@@ -198,14 +224,12 @@ class FlightServiceTest {
             flightSpecMock.when(() -> FlightSpecification.hasDepartureTimeBetween(any(), any())).thenReturn(specMock);
             flightSpecMock.when(() -> FlightSpecification.hasPriceBetween(any(), any())).thenReturn(specMock);
 
-            Page<FlightResponse> response = flightService.search(filter, pageable);
+            PageResponse<FlightResponse> response = flightService.search(filter, PAGE_NUMBER, PAGE_SIZE);
 
             Assertions.assertNotNull(response);
-            Assertions.assertEquals(getFlightResponseWithPage(pageable).getContent(), response.getContent());
+            Assertions.assertEquals(getFlightResponseWithPage().getData(), response.getData());
         }
 
         then(flightRepository).should(times(1)).findAll(any(Specification.class), eq(pageable));
     }
-
-
 }

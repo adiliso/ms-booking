@@ -1,6 +1,6 @@
 package az.edu.turing.booking.model.dto.request;
 
-import az.edu.turing.booking.model.enums.UserRole;
+import az.edu.turing.booking.model.enums.FlightStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRoleUpdateRequest {
+public class FlightStatusUpdateRequest {
 
     @NotNull
-    private UserRole role;
+    private FlightStatus status;
 }

@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 002_create_flight_details_table
+      id: 002_create_flight_detail_table
       author: Aytan Babakishiyeva
       changes:
         - createTable:
-            tableName: flight_details
+            tableName: flight_detail
             columns:
               - column:
                   name: flight_id
@@ -55,8 +55,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
-            baseTableName: flight_details
+            baseTableName: flight_detail
             baseColumnNames: flight_id
-            referencedTableName: flights
+            referencedTableName: flight
             referencedColumnNames: id
-            constraintName: fk_flight_details_flight
+            constraintName: fk_flight_detail_flight
