@@ -6,7 +6,6 @@ import lombok.Getter;
 public enum ErrorEnum {
 
     ACCESS_DENIED(403, "Access Denied"),
-    USERNAME_NOT_FOUND(404, "Username not found"),
     USER_ALREADY_EXISTS(400, "User already exists"),
     USER_NOT_FOUND(404, "User not found"),
     BOOKING_NOT_FOUND(404, "Booking not found"),

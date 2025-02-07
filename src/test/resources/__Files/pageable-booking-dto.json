@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 3,
+      "flightId": 2,
+      "totalPrice": 400,
+      "status": "CONFIRMED",
+      "createdBy": 1
+    }
+  ],
+  "pageNumber": 0,
+  "pageSize": 10,
+  "totalElements": 1,
+  "totalPagesCount": 1
+}

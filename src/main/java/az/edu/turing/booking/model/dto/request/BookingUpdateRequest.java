@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class BookingUpdateRequest {
 
     @Min(0)
-    private double totalPrice;
+    private Double totalPrice;
     private BookingStatus status;
 }

@@ -18,7 +18,6 @@ import az.edu.turing.booking.service.FlightService;
 import az.edu.turing.booking.service.UserService;
 import az.edu.turing.booking.util.FlightSpecificationUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ import static az.edu.turing.booking.model.enums.ErrorEnum.FLIGHT_DETAILS_NOT_FOU
 import static az.edu.turing.booking.model.enums.ErrorEnum.FLIGHT_NOT_FOUND;
 import static az.edu.turing.booking.model.enums.ErrorEnum.INVALID_OPERATION;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -82,7 +80,6 @@ public class FlightServiceImpl implements FlightService {
 
         FlightEntity savedFlight = flightRepository.save(flight);
 
-        log.info("Creating flight...");
         return flightMapper.toResponse(savedFlight);
     }
 
@@ -100,7 +97,6 @@ public class FlightServiceImpl implements FlightService {
 
         FlightEntity updatedFlight = flightRepository.save(flight);
 
-        log.info("Flight with id {} updated successfully.", updatedFlight.getId());
         return flightMapper.toResponse(updatedFlight);
     }
 
@@ -114,7 +110,6 @@ public class FlightServiceImpl implements FlightService {
         FlightEntity flight = findById(flightId);
         flight.setStatus(request.getStatus());
 
-        log.info("Flight status with id {} updated successfully.", flight.getId());
         return flightMapper.toResponse(flight);
     }
 
@@ -127,7 +122,6 @@ public class FlightServiceImpl implements FlightService {
         var responses = flightRepository.findByDepartureTimeBetweenAndStatusIs(now, next24Hours, pageable,
                 FlightStatus.SCHEDULED).map(flightMapper::toResponse);
 
-        log.info("Finding flights in next 24 hours...");
         return PageResponse.of(responses.getContent(),
                 pageNumber,
                 pageSize,
