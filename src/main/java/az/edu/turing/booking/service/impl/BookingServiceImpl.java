@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
 import static az.edu.turing.booking.model.enums.ErrorEnum.BOOKING_NOT_FOUND;
@@ -60,14 +58,14 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(bookingRepository.save(booking));
     }
 
-    private static void checkExistenceOfFreeSeats(BookingCreateRequest request, FlightDetailsResponse flight) {
+    private void checkExistenceOfFreeSeats(BookingCreateRequest request, FlightDetailsResponse flight) {
         if (flight.getFreeSeats() < request.getNumberOfPassengers()) {
             throw new BaseException(INVALID_OPERATION, String.format("There are only %d free seats in this flight",
                     flight.getFreeSeats()));
         }
     }
 
-    private static void checkDepartureAvailability(FlightDetailsResponse flight) {
+    private void checkDepartureAvailability(FlightDetailsResponse flight) {
         if (flight.getDepartureTime().isBefore(LocalDateTime.now().plusMinutes(30))) {
             throw new BaseException(INVALID_OPERATION, "Too late for booking");
         }
