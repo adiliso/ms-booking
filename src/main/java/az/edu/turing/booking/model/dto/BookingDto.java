@@ -16,4 +16,5 @@ public class BookingDto {
     private Long flightId;
     private Double totalPrice;
     private BookingStatus status;
+    private Long createdBy;
 }

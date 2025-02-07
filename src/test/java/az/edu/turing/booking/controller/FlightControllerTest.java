@@ -2,7 +2,6 @@ package az.edu.turing.booking.controller;
 
 import az.edu.turing.booking.exception.BaseException;
 import az.edu.turing.booking.model.dto.FlightFilter;
-import az.edu.turing.booking.model.enums.ErrorEnum;
 import az.edu.turing.booking.service.FlightService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -25,6 +24,7 @@ import static az.edu.turing.booking.common.JsonFiles.FLIGHT_DETAIL_RESPONSE;
 import static az.edu.turing.booking.common.JsonFiles.FLIGHT_RESPONSE;
 import static az.edu.turing.booking.common.JsonFiles.PAGEABLE_FLIGHT_RESPONSE;
 import static az.edu.turing.booking.common.TestUtils.json;
+import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
 import static az.edu.turing.booking.model.enums.ErrorEnum.FLIGHT_DETAILS_NOT_FOUND;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -122,7 +122,7 @@ class FlightControllerTest {
     @Test
     void create_Should_Throw_Exception_When_UserIsNotAdmin() throws Exception {
         given(flightService.create(USER_ID, getFlightCreateRequest()))
-                .willThrow(new BaseException(ErrorEnum.ACCESS_DENIED));
+                .willThrow(new BaseException(ACCESS_DENIED));
 
         mockMvc.perform(post(BASE_URL)
                         .header("User-Id", USER_ID)
@@ -152,7 +152,7 @@ class FlightControllerTest {
     @Test
     void update_Should_Throw_Exception_When_UserIsNotAdmin() throws Exception {
         given(flightService.update(USER_ID, FLIGHT_ID, getFlightUpdateRequest()))
-                .willThrow(new BaseException(ErrorEnum.ACCESS_DENIED));
+                .willThrow(new BaseException(ACCESS_DENIED));
 
         mockMvc.perform(put(BASE_URL + "/{flightId}", FLIGHT_ID)
                         .header("User-Id", USER_ID)

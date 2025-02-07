@@ -8,17 +8,18 @@ import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
 import az.edu.turing.booking.model.dto.response.FlightDetailsResponse;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.BookingService;
 import az.edu.turing.booking.service.FlightService;
 import az.edu.turing.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static az.edu.turing.booking.model.enums.ErrorEnum.ACCESS_DENIED;
 import static az.edu.turing.booking.model.enums.ErrorEnum.BOOKING_NOT_FOUND;
@@ -42,14 +43,9 @@ public class BookingServiceImpl implements BookingService {
 
         FlightDetailsResponse flight = flightService.getInfoById(request.getFlightId());
 
-        if (flight.getDepartureTime().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new BaseException(INVALID_OPERATION, "Too late for booking");
-        }
+        checkDepartureAvailability(flight);
 
-        if (flight.getFreeSeats() < request.getNumberOfPassengers()) {
-            throw new BaseException(INVALID_OPERATION, String.format("There are only %d free seats in this flight",
-                    flight.getFreeSeats()));
-        }
+        checkExistenceOfFreeSeats(request, flight);
 
         BookingEntity booking = bookingMapper.toEntity(userId, request);
         booking.setTotalPrice(flight.getPrice() * request.getNumberOfPassengers());
@@ -62,6 +58,19 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(bookingRepository.save(booking));
     }
 
+    private void checkExistenceOfFreeSeats(BookingCreateRequest request, FlightDetailsResponse flight) {
+        if (flight.getFreeSeats() < request.getNumberOfPassengers()) {
+            throw new BaseException(INVALID_OPERATION, String.format("There are only %d free seats in this flight",
+                    flight.getFreeSeats()));
+        }
+    }
+
+    private void checkDepartureAvailability(FlightDetailsResponse flight) {
+        if (flight.getDepartureTime().isBefore(LocalDateTime.now().plusMinutes(30))) {
+            throw new BaseException(INVALID_OPERATION, "Too late for booking");
+        }
+    }
+
     @Transactional
     @Override
     public BookingDto update(Long userId, Long bookingId, BookingUpdateRequest request) {
@@ -71,16 +80,21 @@ public class BookingServiceImpl implements BookingService {
 
         bookingMapper.updateEntity(booking, userId, request);
 
-        return bookingMapper.toDto(bookingRepository.save(booking));
+        return bookingMapper.toDto(booking);
     }
 
     @Override
-    public Collection<BookingDto> getBookingsByUsername(String username) {
-        return userService.findByUsername(username)
-                .getBookings()
-                .stream()
-                .map(bookingMapper::toDto)
-                .collect(Collectors.toSet());
+    public PageResponse<BookingDto> getBookingsByUsername(String username, final int pageNumber, final int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        var responses = bookingRepository.findAllByUsersUsername(username, pageable)
+                .map(bookingMapper::toDto);
+
+        return PageResponse.of(responses.getContent(),
+                pageNumber,
+                pageSize,
+                responses.getTotalElements(),
+                responses.getTotalPages());
     }
 
     @Override
@@ -91,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto updateStatus(Long userId, Long id, BookingStatus status) {
-        if (!userService.isAdmin(id)) {
+        if (!bookingRepository.existsByIdAndCreatedByIs(id, userId)) {
             throw new BaseException(ACCESS_DENIED);
         }
 
@@ -100,17 +114,6 @@ public class BookingServiceImpl implements BookingService {
         booking.setUpdatedBy(userId);
 
         return bookingMapper.toDto(bookingRepository.save(booking));
-    }
-
-    @Transactional
-    @Override
-    public void cancel(Long id) {
-        BookingEntity booking = findById(id);
-        booking.setStatus(BookingStatus.CANCELLED);
-
-        flightService.addSeats(booking.getFlight().getId(), booking.getUsers().size());
-
-        bookingRepository.save(booking);
     }
 
     private void userExistsById(Long userId) {

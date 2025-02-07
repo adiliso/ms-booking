@@ -4,9 +4,11 @@ package az.edu.turing.booking.controller;
 import az.edu.turing.booking.model.dto.BookingDto;
 import az.edu.turing.booking.model.dto.request.BookingCreateRequest;
 import az.edu.turing.booking.model.dto.request.BookingUpdateRequest;
+import az.edu.turing.booking.model.dto.response.PageResponse;
 import az.edu.turing.booking.model.enums.BookingStatus;
 import az.edu.turing.booking.service.impl.BookingServiceImpl;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
+import static az.edu.turing.booking.model.constant.PageConstants.DEFAULT_PAGE_NUMBER;
+import static az.edu.turing.booking.model.constant.PageConstants.DEFAULT_PAGE_SIZE;
 
 @Validated
 @RestController
@@ -49,8 +52,11 @@ public class BookingController {
     }
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<Collection<BookingDto>> getByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(bookingService.getBookingsByUsername(username));
+    public ResponseEntity<PageResponse<BookingDto>> getByUsername(
+            @PathVariable String username,
+            @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER, required = false) @Min(0) int pageNumber,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE, required = false) @Min(1) int pageSize) {
+        return ResponseEntity.ok(bookingService.getBookingsByUsername(username, pageNumber, pageSize));
     }
 
     @GetMapping("/{id}")
@@ -67,8 +73,10 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancel(@PathVariable Long id) {
-        bookingService.cancel(id);
+    public ResponseEntity<Void> cancel(
+            @RequestHeader("User-Id") Long userId,
+            @PathVariable Long id) {
+        bookingService.cancel(userId, id);
         return ResponseEntity.noContent().build();
     }
 }
